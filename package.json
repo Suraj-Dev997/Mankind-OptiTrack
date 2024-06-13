@@ -12,6 +12,7 @@
   "dependencies": {
     "@react-native-async-storage/async-storage": "^1.18.1",
     "@react-native-community/datetimepicker": "^7.5.0",
+    "@react-native-community/netinfo": "^11.3.2",
     "@react-native-firebase/app": "^18.0.0",
     "@react-native-firebase/messaging": "^18.0.0",
     "@react-native-picker/picker": "^2.4.10",
@@ -46,6 +47,7 @@
     "react-native-splash-screen": "^3.3.0",
     "react-native-svg": "^13.14.0",
     "react-native-tab-view": "^3.5.1",
+    "react-native-toast-message": "^2.2.0",
     "react-native-vector-icons": "^9.2.0",
     "react-native-view-shot": "^3.7.0",
     "rn-fetch-blob": "^0.12.0"

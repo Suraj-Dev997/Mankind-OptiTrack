@@ -33,6 +33,7 @@ const OPCampInfo = () => {
   const [textInputValue, setTextInputValue] = useState('');
   const [userEmpCode, setUserEmpCode] = useState('');
   const [campDate, setCampDate] = useState();
+  const [brandReplaced, setBrandReplaced] = useState();
   const [hq, setHq] = useState();
   const {crId, id} = route.params;
   const [doctor, setDoctor] = useState();
@@ -69,6 +70,7 @@ const OPCampInfo = () => {
         
             setHq(doctorData.camp_location);
             setCampDate(doctorData.camp_date);
+            setBrandReplaced(doctorData.brand_replaced);
             setDoctor(doctorData.doctor_name);
             setInstitute(doctorData.hospital_name);
             setBrandName(doctorData.description);
@@ -174,6 +176,13 @@ const OPCampInfo = () => {
           <Text style={styles.datePickerLabel}>Brand Name:</Text>
           <TextInput
             value={brandName}
+            editable={false}
+            mode="outlined"
+            style={styles.input}
+          />
+          <Text style={styles.datePickerLabel}>Brand Replaced:</Text>
+          <TextInput
+            value={brandReplaced}
             editable={false}
             mode="outlined"
             style={styles.input}

@@ -17,8 +17,8 @@ import RNFetchBlob from 'rn-fetch-blob';
 
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
 import {Picker} from '@react-native-picker/picker';
-import {Button,ToggleButton} from 'react-native-paper';
-import { PDFDocument, Page } from 'react-native-pdf-lib';
+import {Button, ToggleButton} from 'react-native-paper';
+import {PDFDocument, Page} from 'react-native-pdf-lib';
 
 import RNFS from 'react-native-fs';
 import {request, PERMISSIONS, RESULTS} from 'react-native-permissions';
@@ -26,32 +26,28 @@ import {BASE_URL} from '../Configuration/Config';
 import {useRoute} from '@react-navigation/native';
 import {useNavigation} from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
+import useNetworkStatus from '../useNetworkStatus';
 
-const DoctorPoster = ({doctorInfo, doctorImage}) => {
-  return (
-    // <View>
-    //   <Image source={require('./Melasma.jpg')} style={{ width: 300, height: 400 }} />
-    //   <Image source={{ uri: doctorImage }} style={{ position: 'absolute', bottom: 21, left: 27, width: 80, height: 80,borderRadius:50 }} />
-    //   <Text style={{ position: 'absolute', bottom: 60, left: 120 }}>{doctorInfo.name}</Text>
-    // </View>
-    <View style={styles.posterContainer}>
-      {/* Your poster template */}
-      <Image
-        source={require('./Images/Melasma.jpg')}
-        style={styles.posterImage}
-      />
-      <View style={styles.imageContainer}>
-        <Image
-          source={{uri: doctorImage}}
-          style={styles.doctorImage}
-          resizeMode="cover"
-        />
-      </View>
-      <Text style={styles.doctorName}>{doctorInfo.name}</Text>
-      {/* Other doctor info */}
-    </View>
-  );
-};
+// const DoctorPoster = ({doctorInfo, doctorImage}) => {
+//   return (
+//     <View style={styles.posterContainer}>
+//       {/* Your poster template */}
+//       <Image
+//         source={require('./Images/Melasma.jpg')}
+//         style={styles.posterImage}
+//       />
+//       <View style={styles.imageContainer}>
+//         <Image
+//           source={{uri: doctorImage}}
+//           style={styles.doctorImage}
+//           resizeMode="cover"
+//         />
+//       </View>
+//       <Text style={styles.doctorName}>{doctorInfo.name}</Text>
+//       {/* Other doctor info */}
+//     </View>
+//   );
+// };
 
 const PosterDownload = () => {
   const [posters, setPosters] = useState([]);
@@ -73,8 +69,20 @@ const PosterDownload = () => {
   const [language, setLanguage] = useState('en');
 
   const toggleLanguage = () => {
-    setLanguage((prevLanguage) => (prevLanguage === 'en' ? 'hi' : 'en'));
+    setLanguage(prevLanguage => (prevLanguage === 'en' ? 'hi' : 'en'));
   };
+
+  const isConnected = useNetworkStatus();
+
+  useEffect(() => {
+    if (!isConnected) {
+      Alert.alert(
+        'No Internet Connection',
+        'Please check your internet connection.',
+        [{text: 'OK', onPress: () => console.log('OK Pressed')}],
+      );
+    }
+  }, [isConnected]);
 
   useEffect(() => {
     // Fetch data from API endpoint
@@ -141,9 +149,7 @@ const PosterDownload = () => {
         docId: doctorId,
         pType: id,
         lang: language,
-       subCatId:id
-   
-      
+        subCatId: id,
       };
       console.log('Payload getposter', payload);
       const ApiUrl = `${BASE_URL}${'/doc/getPoster'}`;
@@ -184,8 +190,7 @@ const PosterDownload = () => {
       docId: doctorId,
       posterType: id,
       lang: language,
-      subCatId:id
-      
+      subCatId: id,
     };
     console.log('Payload after', payload);
 
@@ -329,35 +334,35 @@ const PosterDownload = () => {
       }
     });
   }, []);
-  const downloadPDF1 = async (poster) => {
+  const downloadPDF1 = async poster => {
     try {
       setLoading(true);
       const randomNum = Math.floor(Math.random() * 10000); // Generates a random number between 0 and 9999
       const pdfName = `Document_${randomNum}.pdf`;
-  
+
       const path = RNFetchBlob.fs.dirs.DownloadDir + '/' + pdfName;
-  
+
       const response = await RNFetchBlob.config({
         fileCache: true,
         appendExt: 'pdf',
         path,
       }).fetch('GET', `${BASE_URL}/${poster.poster_name}`, {
         'Content-Type': 'application/pdf',
-        'Accept': 'application/pdf',
+        Accept: 'application/pdf',
       });
-  
+
       console.log('Response Info:', response.info());
-  
+
       if (response.respInfo.status === 200) {
         const fileContent = await RNFetchBlob.fs.readFile(path, 'base64');
         console.log('File Content (Base64):', fileContent.substring(0, 50)); // Log the first 50 characters of the file content
-  
+
         console.log('PDF downloaded successfully at:', path);
         Alert.alert(
           'Download Successful',
           'PDF downloaded successfully',
-          [{ text: 'OK', onPress: () => console.log('OK Pressed') }],
-          { cancelable: false }
+          [{text: 'OK', onPress: () => console.log('OK Pressed')}],
+          {cancelable: false},
         );
       } else {
         throw new Error(`HTTP status ${response.respInfo.status}`);
@@ -367,42 +372,41 @@ const PosterDownload = () => {
       Alert.alert(
         'Download Error',
         'There was an error downloading the PDF',
-        [{ text: 'OK', onPress: () => console.log('OK Pressed') }],
-        { cancelable: false }
+        [{text: 'OK', onPress: () => console.log('OK Pressed')}],
+        {cancelable: false},
       );
     } finally {
       setLoading(false); // Stop loading, whether successful or not
     }
   };
- 
 
-  const downloadAndConvertToPDF = async (poster) => {
+  const downloadAndConvertToPDF = async poster => {
     try {
-      console.log("poster_name",poster);
+      console.log('poster_name', poster);
       setLoading(true);
       const randomNum = Math.floor(Math.random() * 10000); // Generates a random number between 0 and 9999
       const imageName = `Poster_${randomNum}.png`;
-  
+
       const imagePath = RNFetchBlob.fs.dirs.DownloadDir + '/' + imageName;
-  
+
       // Download the image
       const response = await RNFetchBlob.config({
         fileCache: true,
         appendExt: 'png',
         path: imagePath,
       }).fetch('GET', `${BASE_URL}/${poster.poster_name}`);
-  
+
       const responseInfo = response.info();
       console.log('Response Info:', responseInfo);
-  
+
       if (responseInfo.status !== 200) {
         throw new Error(`HTTP status ${responseInfo.status}`);
       }
-  
+
       // Check if the downloaded file is an image
       if (responseInfo.headers['content-type'].startsWith('image/')) {
         console.log('Image downloaded successfully at:', imagePath);
-  
+
         // Create HTML content with the downloaded image
         const htmlContent = `
           <html>
@@ -426,31 +430,31 @@ const PosterDownload = () => {
             </body>
           </html>
         `;
-  
+
         // Convert HTML to PDF
         const pdfName = `Document_${randomNum}.pdf`;
         const pdfPath = RNFetchBlob.fs.dirs.DownloadDir + '/' + pdfName;
-  
+
         let options = {
           html: htmlContent,
           fileName: `Document_${randomNum}`,
           directory: 'Documents',
         };
-  
+
         const pdf = await RNHTMLtoPDF.convert(options);
-  
+
         const sourcePath = pdf.filePath;
         const destPath = `${RNFS.DownloadDirectoryPath}/${pdfName}`;
-  
+
         await RNFS.moveFile(sourcePath, destPath);
-  
+
         console.log('PDF moved to download folder:', destPath);
-  
+
         Alert.alert(
           'Download Successful',
           'PDF downloaded successfully',
-          [{ text: 'OK', onPress: () => console.log('OK Pressed') }],
-          { cancelable: false }
+          [{text: 'OK', onPress: () => console.log('OK Pressed')}],
+          {cancelable: false},
         );
       } else {
         throw new Error('The downloaded file is not an image.');
@@ -459,9 +463,10 @@ const PosterDownload = () => {
       console.log('Error downloading or converting to PDF:', error);
       Alert.alert(
         'Download Error',
-        error.message || 'There was an error downloading or converting the file to PDF',
-        [{ text: 'OK', onPress: () => console.log('OK Pressed') }],
-        { cancelable: false }
+        error.message ||
+          'There was an error downloading or converting the file to PDF',
+        [{text: 'OK', onPress: () => console.log('OK Pressed')}],
+        {cancelable: false},
       );
     } finally {
       setLoading(false); // Stop loading, whether successful or not
@@ -473,27 +478,27 @@ const PosterDownload = () => {
   //     setLoading1(true);
   //     const randomNum = Math.floor(Math.random() * 10000); // Generates a random number between 0 and 9999
   //     const imageName = `Poster_${randomNum}.png`;
-  
+
   //     const imagePath = RNFetchBlob.fs.dirs.DownloadDir + '/' + imageName;
-  
+
   //     // Download the image
   //     const response = await RNFetchBlob.config({
   //       fileCache: true,
   //       appendExt: 'png',
   //       path: imagePath,
   //     }).fetch('GET', `${BASE_URL}/uploads/poster/${poster.normal_poster_name}`);
-  
+
   //     const responseInfo = response.info();
   //     console.log('Response Info:', responseInfo);
-  
+
   //     if (responseInfo.status !== 200) {
   //       throw new Error(`HTTP status ${responseInfo.status}`);
   //     }
-  
+
   //     // Check if the downloaded file is an image
   //     if (responseInfo.headers['content-type'].startsWith('image/')) {
   //       console.log('Image downloaded successfully at:', imagePath);
-  
+
   //       // Create HTML content with the downloaded image
   //       const htmlContent = `
   //         <html>
@@ -517,26 +522,26 @@ const PosterDownload = () => {
   //           </body>
   //         </html>
   //       `;
-  
+
   //       // Convert HTML to PDF
   //       const pdfName = `Blank_Poster_Document_${randomNum}.pdf`;
   //       const pdfPath = RNFetchBlob.fs.dirs.DownloadDir + '/' + pdfName;
-  
+
   //       let options = {
   //         html: htmlContent,
   //         fileName: `Blank_Poster_Document_${randomNum}`,
   //         directory: 'Documents',
   //       };
-  
+
   //       const pdf = await RNHTMLtoPDF.convert(options);
-  
+
   //       const sourcePath = pdf.filePath;
   //       const destPath = `${RNFS.DownloadDirectoryPath}/${pdfName}`;
-  
+
   //       await RNFS.moveFile(sourcePath, destPath);
-  
+
   //       console.log('PDF moved to download folder:', destPath);
-  
+
   //       Alert.alert(
   //         'Download Successful',
   //         'Blank Poster and downloaded successfully',
@@ -558,7 +563,6 @@ const PosterDownload = () => {
   //     setLoading1(false); // Stop loading, whether successful or not
   //   }
   // };
-  
 
   const downloadImage = async poster => {
     try {
@@ -730,15 +734,25 @@ const PosterDownload = () => {
       <View style={styles.toggleContainer}>
         <TouchableOpacity
           style={[styles.buttont, language === 'en' && styles.selectedButton]}
-          onPress={() => setLanguage('en')}
-        >
-          <Text style={[styles.buttonText, language === 'en' && styles.selectedButtonText]}>English</Text>
+          onPress={() => setLanguage('en')}>
+          <Text
+            style={[
+              styles.buttonText,
+              language === 'en' && styles.selectedButtonText,
+            ]}>
+            English
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.buttont, language === 'hi' && styles.selectedButton]}
-          onPress={() => setLanguage('hi')}
-        >
-          <Text style={[styles.buttonText, language === 'hi' && styles.selectedButtonText]}>हिन्दी</Text>
+          onPress={() => setLanguage('hi')}>
+          <Text
+            style={[
+              styles.buttonText,
+              language === 'hi' && styles.selectedButtonText,
+            ]}>
+            हिन्दी
+          </Text>
         </TouchableOpacity>
       </View>
       <ScrollView>
@@ -765,7 +779,7 @@ const PosterDownload = () => {
             )}
 
             <View style={styles.btncont}>
-            <View style={styles.buttonContainer}>
+              <View style={styles.buttonContainer}>
                 <LinearGradient
                   colors={['#000953', '#092d4f']}
                   style={styles.addbtn}>
@@ -797,11 +811,8 @@ const PosterDownload = () => {
                   </Button>
                 </LinearGradient>
               </View>
-              
             </View>
-            <View style={styles.btncont}>
-              
-            </View>
+            <View style={styles.btncont}></View>
           </View>
         ))}
       </ScrollView>
@@ -812,17 +823,17 @@ const PosterDownload = () => {
 
 const styles = StyleSheet.create({
   toggleContainer: {
-    alignItems:'center',
+    alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
-    marginTop:10,
-    marginBottom:10,
+    marginTop: 10,
+    marginBottom: 10,
   },
   buttont: {
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderWidth: 1,
-    backgroundColor:'#9cbddd',
+    backgroundColor: '#9cbddd',
     borderColor: '#000953',
     borderRadius: 5,
     marginHorizontal: 5,

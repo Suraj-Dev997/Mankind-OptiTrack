@@ -52,6 +52,7 @@ const OPUpdateCampImages = () => {
   const [campname, setCampName] = useState();
   const [loction, setLocation] = useState();
   const [doctor, setDoctor] = useState();
+  const [brandReplaced, setBrandReplaced] = useState();
   const [institute, setInstitute] = useState();
   const [doctor3, setDoctor3] = useState();
   const [doctor4, setDoctor4] = useState();
@@ -320,6 +321,7 @@ const handleCityChange = (value, index) => {
         setAddress(reportInfo.address);
         setSelectedState(parseInt(reportInfo.state_id))
         setDoctor(reportInfo.doctor_name);
+        setBrandReplaced(reportInfo.brand_replaced);
         setInstitute(reportInfo.hospital_name);
 
         // setUserEmpcode(reportInfo.empcode);
@@ -479,6 +481,7 @@ const handleCityChange = (value, index) => {
             zone:selectedZone,
             brandId: selectedMr,
             doctorName: doctor,
+            brandReplaced:brandReplaced,
             campDate: formattedCampDate,
             hospitalName: institute,
             orId: crid,
@@ -799,6 +802,17 @@ const handleCityChange = (value, index) => {
                 ))}
               </Picker>
             </View>
+            <Text style={styles.datePickerLabel}>Brand Replaced</Text>
+            <TextInput
+              // label="HQ"
+              value={brandReplaced}
+              onChangeText={text => setBrandReplaced(text)}
+              mode="outlined"
+              style={styles.input}
+              outlineColor="#000953"
+              activeOutlineColor="#08a5d8"
+              placeholder='Type here'
+            />
             <Text style={styles.datePickerLabel}>Doctor Name</Text>
             <TextInput
               // label="HQ"

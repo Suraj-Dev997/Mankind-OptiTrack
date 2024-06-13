@@ -29,6 +29,7 @@ const OPUploadCampImages = () => {
   const [showCampDatePicker, setShowCampDatePicker] = useState(false);
   const [loction, setLocation] = useState();
   const [doctor, setDoctor] = useState();
+  const [brandReplaced, setBrandReplaced] = useState();
   const [institute, setInstitute] = useState();
   const [address, setAddress] = useState();
   const [city, setCity] = useState([]);
@@ -297,6 +298,7 @@ const handleCityChange = (value, index) => {
             brandId: selectedRepId,
             doctorName: doctor,
             hospitalName: institute,
+            brandReplaced:brandReplaced,
           };
           console.log('Payload after', payload);
           const ApiUrl = `${BASE_URL}${'/operativeReport/addReportWithInfo'}`;
@@ -480,11 +482,22 @@ const handleCityChange = (value, index) => {
               ))}
             </Picker>
           </View>
-          <Text style={styles.datePickerLabel}>Doctor Name</Text>
+          <Text style={styles.datePickerLabel}>Brand Replaced</Text>
           <TextInput
             // label="HQ"
             value={doctor}
             onChangeText={text => setDoctor(text)}
+            mode="outlined"
+            style={styles.input}
+            outlineColor="#000953"
+            activeOutlineColor="#08a5d8"
+            placeholder='Type here'
+          />
+          <Text style={styles.datePickerLabel}>Doctor Name</Text>
+          <TextInput
+            // label="HQ"
+            value={brandReplaced}
+            onChangeText={text => setBrandReplaced(text)}
             mode="outlined"
             style={styles.input}
             outlineColor="#000953"

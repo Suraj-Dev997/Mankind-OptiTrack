@@ -25,14 +25,28 @@ import {BASE_URL1} from '../Configuration/Config';
 import LinearGradient from 'react-native-linear-gradient';
 import {useNavigation} from '@react-navigation/native';
 import {check, PERMISSIONS, request} from 'react-native-permissions';
+import Toast from 'react-native-toast-message';
+import useNetworkStatus from '../useNetworkStatus';
 
-export const Home = () => {
+export const Home = React.forwardRef((props, ref) => {
   const navigation = useNavigation();
   const [permissionStatus, setPermissionStatus] = useState('undetermined');
+  const [showDarkModeAlert, setShowDarkModeAlert] = useState(false);
 
   // const handleCategoryPress = categoryName => {
   //   navigation.navigate('HomeMenu', {category: categoryName});
   // };
+  const isConnected = useNetworkStatus();
+
+  useEffect(() => {
+    if (!isConnected) {
+      Alert.alert(
+        'No Internet Connection',
+        'Please check your internet connection.',
+        [{text: 'OK', onPress: () => console.log('OK Pressed')}],
+      );
+    }
+  }, [isConnected]);
 
   const handleCategoryPress = categoryId => {
     switch (categoryId) {
@@ -105,15 +119,18 @@ export const Home = () => {
                 text: 'Update',
                 onPress: () => {
                   // Replace the URL with your own update URL or the Play Store URL
-                  Linking.openURL(
-                    'https://play.google.com/store/apps/details?id=com.mankindgalaxy',
-                  );
+                  Linking.openURL('https://play.google.com/store/apps');
                 },
               },
             ],
             {cancelable: false},
           );
         }
+        setShowDarkModeAlert(true);
+
+        setTimeout(() => {
+          setShowDarkModeAlert(false);
+        }, 2000);
       } catch (error) {
         console.error('Error checking app version:', error);
         Alert.alert(
@@ -124,6 +141,25 @@ export const Home = () => {
     };
     checkAppVersion();
   }, []);
+
+  useEffect(() => {
+    if (showDarkModeAlert) {
+      Toast.show({
+        type: 'info',
+        text1: 'Attention',
+        text1Style: {
+          fontSize: 18, // Adjust font size as needed
+          // Change text color
+        },
+        text2: 'Please do not use the app in dark mode.',
+        text2Style: {
+          fontSize: 15, // Adjust font size as needed
+          color: '#0a3d57',
+        },
+        visibilityTime: 5000,
+      });
+    }
+  }, [showDarkModeAlert]);
 
   useEffect(() => {
     requestStoragePermission();
@@ -175,36 +211,22 @@ export const Home = () => {
     return () =>
       BackHandler.removeEventListener('hardwareBackPress', backAction);
   }, []);
-  const renderIcon = (iconName) => {
+  const renderIcon = iconName => {
     switch (iconName) {
       case 'Poster':
-        return  <IconButton
-        icon="file-image"
-        iconColor="#fff"
-        size={30}
-        
-      />;
+        return <IconButton icon="file-image" iconColor="#fff" size={30} />;
       case 'Camp':
-        return <IconButton
-        icon="file-document-edit-outline"
-        iconColor="#fff"
-        size={30}
-        
-      />
+        return (
+          <IconButton
+            icon="file-document-edit-outline"
+            iconColor="#fff"
+            size={30}
+          />
+        );
       case 'Post Operative Entry':
-        return <IconButton
-        icon="file-document"
-        iconColor="#fff"
-        size={30}
-        
-      />;
+        return <IconButton icon="file-document" iconColor="#fff" size={30} />;
       case 'Dashboard':
-        return <IconButton
-        icon="view-dashboard"
-        iconColor="#fff"
-        size={30}
-        
-      />;
+        return <IconButton icon="view-dashboard" iconColor="#fff" size={30} />;
       default:
         return null;
     }
@@ -214,7 +236,7 @@ export const Home = () => {
     <ImageBackground
       source={require('./Images/bg3.jpg')}
       style={styles.backgroundImage}>
-    {/* <LinearGradient colors={['#9cbddd', '#b4b2db']} style={styles.container}> */}
+      {/* <LinearGradient colors={['#9cbddd', '#b4b2db']} style={styles.container}> */}
       <View style={styles.container}>
         <StatusBar backgroundColor="#000953" />
 
@@ -230,7 +252,7 @@ export const Home = () => {
         </TouchableOpacity>
         </LinearGradient>
       ))} */}
-      {categories.map(category => (
+          {categories.map(category => (
             <View key={category.category_id}>
               <TouchableOpacity
                 onPress={() => handleCategoryPress(category.category_id)}
@@ -239,10 +261,9 @@ export const Home = () => {
                   colors={['#0112A6', '#000953']}
                   style={[styles.button, styles.elevation]}>
                   <View style={styles.iconTextContainer}>
-                  {renderIcon(category.categeory_name)}
-                    
+                    {renderIcon(category.categeory_name)}
+
                     <Text style={styles.buttonText}>
-                    
                       {category.categeory_name}
                     </Text>
                   </View>
@@ -252,10 +273,11 @@ export const Home = () => {
           ))}
         </View>
       </View>
-    {/* </LinearGradient> */}
+      {/* </LinearGradient> */}
+      <Toast ref={ref} />
     </ImageBackground>
   );
-};
+});
 
 const styles = StyleSheet.create({
   iconTextContainer: {
