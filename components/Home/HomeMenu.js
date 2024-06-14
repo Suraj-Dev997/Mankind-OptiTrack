@@ -8,12 +8,14 @@ import {
   TouchableOpacity,
   ImageBackground,
   Dimensions,
+  Alert,
 } from 'react-native';
 import {useRoute} from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
 import {BASE_URL} from '../Configuration/Config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {IconButton} from 'react-native-paper';
+import useNetworkStatus from '../useNetworkStatus';
 
 export const HomeMenu = props => {
   const route = useRoute();
@@ -21,6 +23,18 @@ export const HomeMenu = props => {
   const [subcategories, setSubcategories] = useState([]);
   const [totalCamps, setTotalCamps] = useState(0);
   const [totalDoctors, setTotalDoctors] = useState(0);
+
+  const isConnected = useNetworkStatus();
+
+  useEffect(() => {
+    if (!isConnected) {
+      Alert.alert(
+        'No Internet Connection',
+        'Please check your internet connection.',
+        [{text: 'OK', onPress: () => console.log('OK Pressed')}],
+      );
+    }
+  }, [isConnected]);
 
   const fetchTotalCamps = async userId => {
     try {
@@ -212,12 +226,11 @@ export const HomeMenu = props => {
                     navigateToCategoryScreen(subcategory.id, subcategory.name)
                   } // Use onTouchStart for touch event
                 >
-                <IconButton
-        icon="file-document-edit"
-        iconColor="#fff"
-        size={30}
-        
-      />
+                  <IconButton
+                    icon="file-document-edit"
+                    iconColor="#fff"
+                    size={30}
+                  />
                   <TouchableOpacity>
                     <Text style={styles.buttonText}>{subcategory.name}</Text>
                   </TouchableOpacity>
@@ -235,12 +248,12 @@ export const HomeMenu = props => {
 
   return (
     <ImageBackground
-    source={require('./Images/bg3.jpg')}
-    style={styles.backgroundImage}>
-    {/* <LinearGradient colors={['#9cbddd', '#b4b2db']} style={styles.container}> */}
+      source={require('./Images/bg3.jpg')}
+      style={styles.backgroundImage}>
+      {/* <LinearGradient colors={['#9cbddd', '#b4b2db']} style={styles.container}> */}
       <StatusBar backgroundColor="#000953" />
       <View>{getContentBasedOnCategory()}</View>
-    {/* </LinearGradient> */}
+      {/* </LinearGradient> */}
     </ImageBackground>
   );
 };
