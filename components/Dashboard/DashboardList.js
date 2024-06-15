@@ -262,7 +262,7 @@ const DashboardList = () => {
       const userId = userData.responseData.user_id;
       console.log('Getting user id:', userId); // Replace with your user ID
       const subCatId = id; // Replace with your subcategory ID
-      const randomFileName = `Report_${generateRandomNumber()}.xlsx`;
+      const randomFileName = `OptiTrack_Report_${generateRandomNumber()}.xlsx`;
       // const apiUrl = `${BASE_URL}/dashboard/getFilterCampReportCsv/?userId=${userId}&subCatId=${subCatId}`;
 
       // const response = await RNFetchBlob.config({
@@ -331,14 +331,14 @@ const DashboardList = () => {
       const userId = userData.responseData.user_id;
       console.log('Getting user id:', userId); // Replace with your user ID
       const subCatId = id; // Replace with your subcategory ID
-      const randomFileName = `UserReport_${generateRandomNumber()}.xlsx`;
+      const randomFileName = `OptiTrack_UserReport_${generateRandomNumber()}.xlsx`;
       const apiUrl = `${BASE_URL}/dashboard/getFilterCampReportCsvWithId`;
 
       const payload = {
         crId: erid,
         subCatId: subCatId,
       };
-console.log("payload for user file",payload);
+      console.log('payload for user file', payload);
       const response = await RNFetchBlob.config({
         fileCache: true,
         path: `${RNFetchBlob.fs.dirs.DownloadDir}/${randomFileName}`,
@@ -508,24 +508,22 @@ console.log("payload for user file",payload);
           )}
         </View>
       </View>
-<View style={styles.fullcont}>
-<TableHeader />
-<View style={styles.tableCont}>
-      
-        <FlatList
-          data={data}
-          keyExtractor={item => item.erid.toString()}
-          renderItem={renderUserItem}
-        />
+      <View style={styles.fullcont}>
+        <TableHeader />
+        <View style={styles.tableCont}>
+          <FlatList
+            data={data}
+            keyExtractor={item => item.erid.toString()}
+            renderItem={renderUserItem}
+          />
+        </View>
       </View>
-</View>
-     
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  fullcont:{
+  fullcont: {
     backgroundColor: '#fff',
     flex: 1,
   },
@@ -695,7 +693,7 @@ const styles = StyleSheet.create({
   },
   columnHeader: {
     textAlign: 'left',
-    paddingLeft:20,
+    paddingLeft: 20,
     color: '#fff',
     fontWeight: 'bold',
     flex: 1,

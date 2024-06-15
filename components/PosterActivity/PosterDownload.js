@@ -338,7 +338,7 @@ const PosterDownload = () => {
     try {
       setLoading(true);
       const randomNum = Math.floor(Math.random() * 10000); // Generates a random number between 0 and 9999
-      const pdfName = `Document_${randomNum}.pdf`;
+      const pdfName = `OptiTrack_Document_${randomNum}.pdf`;
 
       const path = RNFetchBlob.fs.dirs.DownloadDir + '/' + pdfName;
 
@@ -385,7 +385,7 @@ const PosterDownload = () => {
       console.log('poster_name', poster);
       setLoading(true);
       const randomNum = Math.floor(Math.random() * 10000); // Generates a random number between 0 and 9999
-      const imageName = `Poster_${randomNum}.png`;
+      const imageName = `OptiTrack_Poster_${randomNum}.png`;
 
       const imagePath = RNFetchBlob.fs.dirs.DownloadDir + '/' + imageName;
 
@@ -432,12 +432,12 @@ const PosterDownload = () => {
         `;
 
         // Convert HTML to PDF
-        const pdfName = `Document_${randomNum}.pdf`;
+        const pdfName = `OptiTrack_Document_${randomNum}.pdf`;
         const pdfPath = RNFetchBlob.fs.dirs.DownloadDir + '/' + pdfName;
 
         let options = {
           html: htmlContent,
-          fileName: `Document_${randomNum}`,
+          fileName: `OptiTrack_Document_${randomNum}`,
           directory: 'Documents',
         };
 
@@ -568,7 +568,7 @@ const PosterDownload = () => {
     try {
       setLoading1(true);
       const randomNum = Math.floor(Math.random() * 10000); // Generates a random number between 0 and 9999
-      const imageName = `Poster_${randomNum}.png`;
+      const imageName = `OptiTrack_Poster_${randomNum}.png`;
 
       const path = RNFetchBlob.fs.dirs.DownloadDir + '/' + imageName;
 

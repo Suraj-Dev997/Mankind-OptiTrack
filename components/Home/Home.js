@@ -100,11 +100,11 @@ export const Home = React.forwardRef((props, ref) => {
           },
         });
         const data = await response.json();
-        // const latestVersion = data[0].version;
-        const latestVersion = '1';
+        const latestVersion = data[0].version;
+        // const latestVersion = '1';
         console.log('this is data', data);
-        // const currentVersion = DeviceInfo.getVersion(); // Replace with your current app version
-        const currentVersion = '1'; // Replace with your current app version
+        const currentVersion = DeviceInfo.getVersion(); // Replace with your current app version
+        // const currentVersion = '1'; // Replace with your current app version
 
         console.log('Current b', currentVersion);
         console.log('Latest b', latestVersion);

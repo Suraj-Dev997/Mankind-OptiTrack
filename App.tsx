@@ -257,7 +257,7 @@ function App(): JSX.Element {
         <Stack.Screen
           name="OPUploadCampImages"
           component={OPUploadCampImages}
-          options={{title: 'Add Camp Images'}}
+          options={{title: 'Add Camp Detail'}}
         />
         <Stack.Screen
           name="OPUpdateCampReport"
@@ -267,7 +267,7 @@ function App(): JSX.Element {
         <Stack.Screen
           name="OPUpdateCampImages"
           component={OPUpdateCampImages}
-          options={{title: 'Update Camp Images'}}
+          options={{title: 'Update Camp Detail'}}
         />
         <Stack.Screen
           name="OPCampInfo"
