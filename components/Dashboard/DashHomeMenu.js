@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   ImageBackground,
   Dimensions,
+  Alert,
 } from 'react-native';
 import {useRoute} from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
@@ -16,6 +17,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useNavigation} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {IconButton} from 'react-native-paper';
+import useNetworkStatus from '../useNetworkStatus';
 
 export const DashHomeMenu = props => {
   const route = useRoute();
@@ -24,6 +26,18 @@ export const DashHomeMenu = props => {
   const [totalCamps, setTotalCamps] = useState(0);
   const [totalDoctors, setTotalDoctors] = useState(0);
   const navigation = useNavigation();
+
+  const isConnected = useNetworkStatus();
+
+  useEffect(() => {
+    if (!isConnected) {
+      Alert.alert(
+        'No Internet Connection',
+        'Please check your internet connection.',
+        [{text: 'OK', onPress: () => console.log('OK Pressed')}],
+      );
+    }
+  }, [isConnected]);
 
   const fetchTotalCamps = async userId => {
     try {
@@ -229,12 +243,11 @@ export const DashHomeMenu = props => {
                     navigateToCategoryScreen(subcategory.id, subcategory.name)
                   } // Use onTouchStart for touch event
                 >
-                 <IconButton
-        icon="view-dashboard-outline"
-        iconColor="#fff"
-        size={30}
-        
-      />
+                  <IconButton
+                    icon="view-dashboard-outline"
+                    iconColor="#fff"
+                    size={30}
+                  />
                   <TouchableOpacity>
                     <Text style={styles.buttonText}>{subcategory.name}</Text>
                   </TouchableOpacity>
@@ -252,12 +265,12 @@ export const DashHomeMenu = props => {
 
   return (
     <ImageBackground
-    source={require('./Images/bg3.jpg')}
-    style={styles.backgroundImage}>
-    {/* <LinearGradient colors={['#9cbddd', '#b4b2db']} style={styles.container}> */}
+      source={require('./Images/bg3.jpg')}
+      style={styles.backgroundImage}>
+      {/* <LinearGradient colors={['#9cbddd', '#b4b2db']} style={styles.container}> */}
       <StatusBar backgroundColor="#000953" />
       <View>{getContentBasedOnCategory()}</View>
-    {/* </LinearGradient> */}
+      {/* </LinearGradient> */}
     </ImageBackground>
   );
 };
