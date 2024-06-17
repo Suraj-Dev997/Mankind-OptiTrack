@@ -119,7 +119,9 @@ export const Home = React.forwardRef((props, ref) => {
                 text: 'Update',
                 onPress: () => {
                   // Replace the URL with your own update URL or the Play Store URL
-                  Linking.openURL('https://play.google.com/store/apps');
+                  Linking.openURL(
+                    'https://play.google.com/store/apps/details?id=com.medicalcamp',
+                  );
                 },
               },
             ],
