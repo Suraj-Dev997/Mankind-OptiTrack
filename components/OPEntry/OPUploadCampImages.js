@@ -1,4 +1,4 @@
-import React, {useState,useEffect} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   Text,
@@ -19,6 +19,7 @@ import {BASE_URL} from '../Configuration/Config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import LinearGradient from 'react-native-linear-gradient';
 import {format} from 'date-fns';
+import ImageResizer from '@bam.tech/react-native-image-resizer';
 
 const OPUploadCampImages = () => {
   const navigation = useNavigation();
@@ -66,21 +67,20 @@ const OPUploadCampImages = () => {
   const [imageUris, setImageUris] = useState([]);
   const [loading, setLoading] = useState(false);
   const {crid, id} = route.params;
- 
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         // Fetch state first
         await fetchState();
-        await  fetchCity();
+        await fetchCity();
         await fetchZone();
         await fetchRepList();
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error('Error fetching data:', error);
       }
     };
-  
+
     // Call fetchData function
     fetchData();
   }, []);
@@ -91,12 +91,10 @@ const OPUploadCampImages = () => {
     // Additional logic if needed when the camp selection changes
   };
   const fetchState = async () => {
-
     const ApiUrl = `${BASE_URL}${'/basic/getStates'}`;
     try {
       const response = await fetch(ApiUrl, {
         method: 'GET',
-        
       });
 
       const result = await response.json();
@@ -106,7 +104,7 @@ const OPUploadCampImages = () => {
       // Set default selected camp if needed
       // setSelectedCamp(result.data[0]?.camp_name || '');
       if (result.length > 0) {
-       await setSelectedStateId(result[0].id);
+        await setSelectedStateId(result[0].id);
         console.log('set centerid', result[0].id);
       }
     } catch (error) {
@@ -117,53 +115,49 @@ const OPUploadCampImages = () => {
   const handleStateChange = (value, index) => {
     setSelectedState(value);
     setSelectedStateId(value);
-  fetchCity(value);
-    console.log("selectedStateid",value);
-    
-   
-};
-const fetchCity = async (value) => {
-  const payload ={stateId: !value ? 1:value}
-  setSelectedStateId(value);
-  console.log("pay id",payload);
-  console.log("SState id",selectedStateId);
-  const ApiUrl = `${BASE_URL}${'/basic/getCities'}`;
-  try {
-    const response = await fetch(ApiUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    });
+    fetchCity(value);
+    console.log('selectedStateid', value);
+  };
+  const fetchCity = async value => {
+    const payload = {stateId: !value ? 1 : value};
+    setSelectedStateId(value);
+    console.log('pay id', payload);
+    console.log('SState id', selectedStateId);
+    const ApiUrl = `${BASE_URL}${'/basic/getCities'}`;
+    try {
+      const response = await fetch(ApiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
 
-    const result = await response.json();
+      const result = await response.json();
 
-    console.log(result);
-    setCity(result);
-    // Set default selected camp if needed
-    // setSelectedCamp(result.data[0]?.camp_name || '');
-    if (result.length > 0) {
-      setSelectedCityId(result[0].id);
-      console.log('set centerid', result[0].id);
+      console.log(result);
+      setCity(result);
+      // Set default selected camp if needed
+      // setSelectedCamp(result.data[0]?.camp_name || '');
+      if (result.length > 0) {
+        setSelectedCityId(result[0].id);
+        console.log('set centerid', result[0].id);
+      }
+    } catch (error) {
+      console.error('Error fetching City:', error.message);
     }
-  } catch (error) {
-    console.error('Error fetching City:', error.message);
-  }
-};
+  };
 
-const handleCityChange = (value, index) => {
-  setSelectedCity(value);
-  setSelectedCityId(value);
-  // Additional logic if needed when the camp selection changes
-};
+  const handleCityChange = (value, index) => {
+    setSelectedCity(value);
+    setSelectedCityId(value);
+    // Additional logic if needed when the camp selection changes
+  };
   const fetchZone = async () => {
-
     const ApiUrl = `${BASE_URL}${'/basic/getZone'}`;
     try {
       const response = await fetch(ApiUrl, {
         method: 'GET',
-        
       });
 
       const result = await response.json();
@@ -184,9 +178,8 @@ const handleCityChange = (value, index) => {
   const handleZoneChange = (value, index) => {
     setSelectedZone(value);
     setSelectedZoneId(value);
-    console.log("selectedZoneid",value);
- 
-   
+    console.log('selectedZoneid', value);
+
     // Additional logic if needed when the camp selection changes
   };
   const fetchRepList = async () => {
@@ -291,14 +284,14 @@ const handleCityChange = (value, index) => {
             userId: userId, // Use the retrieved userId here
             subCatId: id,
             campDate: formattedCampDate,
-          address: address,
-            state:selectedStateId,
+            address: address,
+            state: selectedStateId,
             city: selectedCityId,
-            zone:selectedZoneId,
+            zone: selectedZoneId,
             brandId: selectedRepId,
             doctorName: doctor,
             hospitalName: institute,
-            brandReplaced:brandReplaced,
+            brandReplaced: brandReplaced,
           };
           console.log('Payload after', payload);
           const ApiUrl = `${BASE_URL}${'/operativeReport/addReportWithInfo'}`;
@@ -325,7 +318,7 @@ const handleCityChange = (value, index) => {
         if (data.errorCode === '1') {
           // Navigate to the "AddCampData" screen on success
           // navigation.navigate('OPUploadCampImages', {crid: data.ocrid, id});
-          setNcrid(data.ocrid)
+          setNcrid(data.ocrid);
           console.log('navigation crid', data.ocrid);
           console.log('navigation values', id);
           submitData1(data.ocrid);
@@ -343,38 +336,87 @@ const handleCityChange = (value, index) => {
       });
   };
 
+  // const handleImageUpload = async () => {
+  //   try {
+  //     if (imageUris.length >= 10) {
+  //       // If there are already 3 images, show an alert
+  //       alert('You can upload a maximum of 10 images');
+  //       return;
+  //     }
+  //     const images = await ImagePicker.openPicker({
+  //       mediaType: 'photo',
+  //       multiple: true, // Allow multiple image selection
+  //     });
+  //     if (images.length + imageUris.length > 10) {
+  //       // If the total number of selected images exceeds 3, show an alert
+  //       alert('You can upload a maximum of 10 images');
+  //       return;
+  //     }
+  //     const previews = images.map((image, index) => (
+  //       <TouchableOpacity key={index} onPress={() => handleDeleteImage(index)}>
+  //         <Image source={{uri: image.path}} style={styles.previewImage} />
+  //         <Text style={styles.deleteButton}>Delete</Text>
+  //       </TouchableOpacity>
+  //     ));
+
+  //     // Store image URIs directly in an array
+  //     const newImageUris = images.map(image => image.path);
+
+  //     setImagePreviews(prevPreviews => [...prevPreviews, ...previews]);
+
+  //     // Store the image URIs in another state variable
+  //     setImageUris(prevImageUris => [...prevImageUris, ...newImageUris]);
+  //   } catch (error) {
+  //     // Handle the error, e.g., if the user cancels the selection
+  //     console.error('Image picker error:', error);
+  //   }
+  // };
+
   const handleImageUpload = async () => {
     try {
       if (imageUris.length >= 10) {
-        // If there are already 3 images, show an alert
         alert('You can upload a maximum of 10 images');
         return;
       }
+
       const images = await ImagePicker.openPicker({
         mediaType: 'photo',
-        multiple: true, // Allow multiple image selection
+        multiple: true,
       });
+
       if (images.length + imageUris.length > 10) {
-        // If the total number of selected images exceeds 3, show an alert
         alert('You can upload a maximum of 10 images');
         return;
       }
-      const previews = images.map((image, index) => (
+
+      const compressedImages = await Promise.all(
+        images.map(async image => {
+          try {
+            const compressedImage = await ImageResizer.createResizedImage(
+              image.path,
+              image.width,
+              image.height,
+              'JPEG', // You can also use 'PNG' or 'WEBP'
+              80, // Compression quality, 0-100
+            );
+            return compressedImage.uri;
+          } catch (error) {
+            console.error('Image compression error:', error);
+            return image.path; // Fallback to original image if compression fails
+          }
+        }),
+      );
+
+      const previews = compressedImages.map((uri, index) => (
         <TouchableOpacity key={index} onPress={() => handleDeleteImage(index)}>
-          <Image source={{uri: image.path}} style={styles.previewImage} />
+          <Image source={{uri}} style={styles.previewImage} />
           <Text style={styles.deleteButton}>Delete</Text>
         </TouchableOpacity>
       ));
 
-      // Store image URIs directly in an array
-      const newImageUris = images.map(image => image.path);
-
       setImagePreviews(prevPreviews => [...prevPreviews, ...previews]);
-
-      // Store the image URIs in another state variable
-      setImageUris(prevImageUris => [...prevImageUris, ...newImageUris]);
+      setImageUris(prevImageUris => [...prevImageUris, ...compressedImages]);
     } catch (error) {
-      // Handle the error, e.g., if the user cancels the selection
       console.error('Image picker error:', error);
     }
   };
@@ -396,7 +438,6 @@ const handleCityChange = (value, index) => {
   };
 
   const submitData1 = async crId => {
-    
     try {
       setLoading(true);
       const ApiUrl = `${BASE_URL}${'/report/uploadImages'}`;
@@ -467,136 +508,144 @@ const handleCityChange = (value, index) => {
       <View style={styles.container}>
         <ScrollView>
           <View style={styles.form}>
-          <Text style={styles.datePickerLabel}>Select Brand Name:</Text>
-          <View style={styles.pickcontainer}>
-            <Picker
-              selectedValue={selectedRep}
-              style={styles.picker}
-              onValueChange={(value, index) => handleRepChange(value, index)}>
-              {repList.map((rep, index) => (
-                <Picker.Item
-                  key={rep.basic_id}
-                  label={rep.description}
-                  value={rep.basic_id}
+            <Text style={styles.datePickerLabel}>Select Brand Name:</Text>
+            <View style={styles.pickcontainer}>
+              <Picker
+                selectedValue={selectedRep}
+                style={styles.picker}
+                onValueChange={(value, index) => handleRepChange(value, index)}>
+                {repList.map((rep, index) => (
+                  <Picker.Item
+                    key={rep.basic_id}
+                    label={rep.description}
+                    value={rep.basic_id}
+                  />
+                ))}
+              </Picker>
+            </View>
+            <Text style={styles.datePickerLabel}>Brand Replaced</Text>
+            <TextInput
+              // label="HQ"
+              value={doctor}
+              onChangeText={text => setDoctor(text)}
+              mode="outlined"
+              style={styles.input}
+              outlineColor="#000953"
+              activeOutlineColor="#08a5d8"
+              placeholder="Type here"
+            />
+            <Text style={styles.datePickerLabel}>Doctor Name</Text>
+            <TextInput
+              // label="HQ"
+              value={brandReplaced}
+              onChangeText={text => setBrandReplaced(text)}
+              mode="outlined"
+              style={styles.input}
+              outlineColor="#000953"
+              activeOutlineColor="#08a5d8"
+              placeholder="Type here"
+            />
+            <View style={styles.datePickerContainer}>
+              <Text style={styles.datePickerLabel} onPress={showCampDate}>
+                Select Date of Entry:
+              </Text>
+              <Button
+                style={styles.datePickerButton}
+                onPress={showCampDate}
+                labelStyle={styles.addbtnText1}>
+                {campDate.getDate().toString().padStart(2, '0')}-
+                {(campDate.getMonth() + 1).toString().padStart(2, '0')}-
+                {campDate.getFullYear()}
+              </Button>
+              {showCampDatePicker && (
+                <DateTimePicker
+                  value={campDate}
+                  mode="date"
+                  is24Hour={true}
+                  display="default"
+                  dateFormat="DD-MM-YYYY"
+                  onChange={handleCampDateChange}
                 />
-              ))}
-            </Picker>
-          </View>
-          <Text style={styles.datePickerLabel}>Brand Replaced</Text>
-          <TextInput
-            // label="HQ"
-            value={doctor}
-            onChangeText={text => setDoctor(text)}
-            mode="outlined"
-            style={styles.input}
-            outlineColor="#000953"
-            activeOutlineColor="#08a5d8"
-            placeholder='Type here'
-          />
-          <Text style={styles.datePickerLabel}>Doctor Name</Text>
-          <TextInput
-            // label="HQ"
-            value={brandReplaced}
-            onChangeText={text => setBrandReplaced(text)}
-            mode="outlined"
-            style={styles.input}
-            outlineColor="#000953"
-            activeOutlineColor="#08a5d8"
-            placeholder='Type here'
-          />
-          <View style={styles.datePickerContainer}>
-            <Text style={styles.datePickerLabel} onPress={showCampDate}>
-              Select Date of Entry:
+              )}
+            </View>
+            <Text style={styles.datePickerLabel}>
+              Institute / Hospital Name
             </Text>
-            <Button
-              style={styles.datePickerButton}
-              onPress={showCampDate}
-              labelStyle={styles.addbtnText1}>
-              {campDate.getDate().toString().padStart(2, '0')}-
-              {(campDate.getMonth() + 1).toString().padStart(2, '0')}-
-              {campDate.getFullYear()}
-            </Button>
-            {showCampDatePicker && (
-              <DateTimePicker
-                value={campDate}
-                mode="date"
-                is24Hour={true}
-                display="default"
-                dateFormat="DD-MM-YYYY"
-                onChange={handleCampDateChange}
-              />
-            )}
-          </View>
-          <Text style={styles.datePickerLabel}>Institute / Hospital Name</Text>
-          <TextInput
-            // label="HQ"
-            value={institute}
-            onChangeText={text => setInstitute(text)}
-            mode="outlined"
-            style={styles.input}
-            outlineColor="#000953"
-            activeOutlineColor="#08a5d8"
-            placeholder='Type here'
-          />
-           <Text style={styles.datePickerLabel}>Camp Address</Text>
-          <TextInput
-            // label="HQ"
-            value={address}
-            onChangeText={text => setAddress(text)}
-            mode="outlined"
-            style={styles.input}
-            outlineColor="#000953"
-            activeOutlineColor="#08a5d8"
-            placeholder='Type here'
-          />
-           <Text style={styles.datePickerLabel}>State:</Text>
-          <View style={styles.pickcontainer}>
-            <Picker
-             selectedValue={selectedState}
-              style={styles.picker}
-              onValueChange={(value, index) => handleStateChange(value, index)}>
-              {state.map((state, index) => (
-                <Picker.Item
-                  key={state.id}
-                  label={state.state_name}
-                  value={state.id}
-                />
-              ))}
-            </Picker>
-          </View>
-        
-            <Text style={styles.datePickerLabel}>City:</Text>
-          <View style={styles.pickcontainer}>
-            <Picker
-              selectedValue={selectedCity}
-              style={styles.picker}
-              onValueChange={(value, index) => handleCityChange(value, index)}>
-              {city.map((city, index) => (
-                <Picker.Item
-                  key={city.id}
-                  label={city.city_name}
-                  value={city.id}
-                />
-              ))}
-            </Picker>
-          </View>
+            <TextInput
+              // label="HQ"
+              value={institute}
+              onChangeText={text => setInstitute(text)}
+              mode="outlined"
+              style={styles.input}
+              outlineColor="#000953"
+              activeOutlineColor="#08a5d8"
+              placeholder="Type here"
+            />
+            <Text style={styles.datePickerLabel}>Camp Address</Text>
+            <TextInput
+              // label="HQ"
+              value={address}
+              onChangeText={text => setAddress(text)}
+              mode="outlined"
+              style={styles.input}
+              outlineColor="#000953"
+              activeOutlineColor="#08a5d8"
+              placeholder="Type here"
+            />
+            <Text style={styles.datePickerLabel}>State:</Text>
+            <View style={styles.pickcontainer}>
+              <Picker
+                selectedValue={selectedState}
+                style={styles.picker}
+                onValueChange={(value, index) =>
+                  handleStateChange(value, index)
+                }>
+                {state.map((state, index) => (
+                  <Picker.Item
+                    key={state.id}
+                    label={state.state_name}
+                    value={state.id}
+                  />
+                ))}
+              </Picker>
+            </View>
 
-          <Text style={styles.datePickerLabel}>Zone:</Text>
-          <View style={styles.pickcontainer}>
-            <Picker
-              selectedValue={selectedZone}
-              style={styles.picker}
-              onValueChange={(value, index) => handleZoneChange(value, index)}>
-              {zone.map((zone, index) => (
-                <Picker.Item
-                  key={zone.zone_id}
-                  label={zone.zone_name}
-                  value={zone.zone_id}
-                />
-              ))}
-            </Picker>
-          </View>
-          
+            <Text style={styles.datePickerLabel}>City:</Text>
+            <View style={styles.pickcontainer}>
+              <Picker
+                selectedValue={selectedCity}
+                style={styles.picker}
+                onValueChange={(value, index) =>
+                  handleCityChange(value, index)
+                }>
+                {city.map((city, index) => (
+                  <Picker.Item
+                    key={city.id}
+                    label={city.city_name}
+                    value={city.id}
+                  />
+                ))}
+              </Picker>
+            </View>
+
+            <Text style={styles.datePickerLabel}>Zone:</Text>
+            <View style={styles.pickcontainer}>
+              <Picker
+                selectedValue={selectedZone}
+                style={styles.picker}
+                onValueChange={(value, index) =>
+                  handleZoneChange(value, index)
+                }>
+                {zone.map((zone, index) => (
+                  <Picker.Item
+                    key={zone.zone_id}
+                    label={zone.zone_name}
+                    value={zone.zone_id}
+                  />
+                ))}
+              </Picker>
+            </View>
+
             <Text style={styles.datePickerLabel}>
               Upload a maximum of 10 images.
             </Text>
@@ -634,7 +683,7 @@ const handleCityChange = (value, index) => {
               outlineColor="#000953"
               activeOutlineColor="#08a5d8"
               style={styles.input}
-              placeholder='Type here'
+              placeholder="Type here"
             />
             {/* <Text style={styles.desc}>
             (Description: 1st choice of Brand for Dry-Eye management; Include comments from doctor, Patient feedback, any other necessary information)
@@ -660,9 +709,9 @@ const handleCityChange = (value, index) => {
 };
 
 const styles = StyleSheet.create({
-  desc:{
-    color:'red',
-    fontSize:10
+  desc: {
+    color: 'red',
+    fontSize: 10,
   },
   addbtn: {
     backgroundColor: '#000953',
