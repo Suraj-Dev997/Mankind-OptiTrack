@@ -25,6 +25,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import RNFetchBlob from 'rn-fetch-blob';
 import {LineChart} from 'react-native-charts-wrapper';
 import RNFS from 'react-native-fs';
+import useNetworkStatus from '../useNetworkStatus';
 
 // Create separate components for each category's content
 const CategoryDash = ({users, filteredUsers, renderUserItem}) => (
@@ -45,6 +46,18 @@ const Header = () => {
   useEffect(() => {
     fetchData();
   }, []);
+
+  const isConnected = useNetworkStatus();
+
+  useEffect(() => {
+    if (!isConnected) {
+      Alert.alert(
+        'No Internet Connection',
+        'Please check your internet connection.',
+        [{text: 'OK', onPress: () => console.log('OK Pressed')}],
+      );
+    }
+  }, [isConnected]);
 
   const fetchData = async () => {
     try {
