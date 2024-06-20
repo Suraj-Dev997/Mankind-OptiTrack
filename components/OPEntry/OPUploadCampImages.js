@@ -372,6 +372,55 @@ const OPUploadCampImages = () => {
   //   }
   // };
 
+  // const handleImageUpload1 = async () => {
+  //   try {
+  //     if (imageUris.length >= 10) {
+  //       alert('You can upload a maximum of 10 images');
+  //       return;
+  //     }
+
+  //     const images = await ImagePicker.openPicker({
+  //       mediaType: 'photo',
+  //       multiple: true,
+  //     });
+
+  //     if (images.length + imageUris.length > 10) {
+  //       alert('You can upload a maximum of 10 images');
+  //       return;
+  //     }
+
+  //     const compressedImages = await Promise.all(
+  //       images.map(async image => {
+  //         try {
+  //           const compressedImage = await ImageResizer.createResizedImage(
+  //             image.path,
+  //             image.width,
+  //             image.height,
+  //             'JPEG', // You can also use 'PNG' or 'WEBP'
+  //             80, // Compression quality, 0-100
+  //           );
+  //           return compressedImage.uri;
+  //         } catch (error) {
+  //           console.error('Image compression error:', error);
+  //           return image.path; // Fallback to original image if compression fails
+  //         }
+  //       }),
+  //     );
+
+  //     const previews = compressedImages.map((uri, index) => (
+  //       <TouchableOpacity key={index} onPress={() => handleDeleteImage(index)}>
+  //         <Image source={{uri}} style={styles.previewImage} />
+  //         <Text style={styles.deleteButton}>Delete</Text>
+  //       </TouchableOpacity>
+  //     ));
+
+  //     setImagePreviews(prevPreviews => [...prevPreviews, ...previews]);
+  //     setImageUris(prevImageUris => [...prevImageUris, ...compressedImages]);
+  //   } catch (error) {
+  //     console.error('Image picker error:', error);
+  //   }
+  // };
+
   const handleImageUpload = async () => {
     try {
       if (imageUris.length >= 10) {
@@ -392,6 +441,14 @@ const OPUploadCampImages = () => {
       const compressedImages = await Promise.all(
         images.map(async image => {
           try {
+            const imageFile = await fetch(image.path);
+            const imageBlob = await imageFile.blob();
+            const imageSize = imageBlob.size / (1024 * 1024); // Size in MB
+
+            if (imageSize <= 1) {
+              return image.path; // Skip compression if size is <= 1 MB
+            }
+
             const compressedImage = await ImageResizer.createResizedImage(
               image.path,
               image.width,
@@ -399,6 +456,7 @@ const OPUploadCampImages = () => {
               'JPEG', // You can also use 'PNG' or 'WEBP'
               80, // Compression quality, 0-100
             );
+
             return compressedImage.uri;
           } catch (error) {
             console.error('Image compression error:', error);

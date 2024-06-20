@@ -19,6 +19,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {BASE_URL} from '../Configuration/Config';
 import LinearGradient from 'react-native-linear-gradient';
 import {format} from 'date-fns';
+import ImageResizer from '@bam.tech/react-native-image-resizer';
 
 const OPUpdateCampImages = () => {
   const [isDataFetched, setIsDataFetched] = useState(false);
@@ -89,13 +90,18 @@ const OPUpdateCampImages = () => {
 
   const fetchCampData = async () => {
     try {
-      await Promise.all([fetchMrData(), fetchState(),fetchReportAndCity(),fetchZone()]);
+      await Promise.all([
+        fetchMrData(),
+        fetchState(),
+        fetchReportAndCity(),
+        fetchZone(),
+      ]);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
   };
 
-  const fetchReportAndCity = async (value) => {
+  const fetchReportAndCity = async value => {
     setIsLoading(true);
     const apiUrl = `${BASE_URL}/operativeReport/getReportInfoWithId`;
 
@@ -113,15 +119,14 @@ const OPUpdateCampImages = () => {
       const result = await response.json();
 
       if (result && result.length > 0) {
-       
         const reportInfo = result[0];
 
         const stateId = parseInt(reportInfo.state_id);
         setSelectedStateId(stateId);
-        console.log("seted stid", stateId);
-        
+        console.log('seted stid', stateId);
+
         // Fetch city information
-        const cityPayload = { stateId: !value ? stateId:value};
+        const cityPayload = {stateId: !value ? stateId : value};
         const cityApiUrl = `${BASE_URL}/basic/getCities`;
 
         try {
@@ -157,14 +162,11 @@ const OPUpdateCampImages = () => {
     }
   };
 
- 
   const fetchState = async () => {
-
     const ApiUrl = `${BASE_URL}${'/basic/getStates'}`;
     try {
       const response = await fetch(ApiUrl, {
         method: 'GET',
-        
       });
 
       const result = await response.json();
@@ -174,7 +176,7 @@ const OPUpdateCampImages = () => {
       // Set default selected camp if needed
       // setSelectedCamp(result.data[0]?.camp_name || '');
       if (result.length > 0) {
-       await setSelectedStateId(result[0].id);
+        await setSelectedStateId(result[0].id);
         console.log('set centerid', result[0].id);
       }
     } catch (error) {
@@ -182,29 +184,24 @@ const OPUpdateCampImages = () => {
     }
   };
 
-//   const handleStateChange = (value, index) => {
-//     setSelectedState(value);
-//     setSelectedStateId(value);
-//   fetchReportAndCity(value);
-//     console.log("selectedStateid",value);
-    
-   
-// };
+  //   const handleStateChange = (value, index) => {
+  //     setSelectedState(value);
+  //     setSelectedStateId(value);
+  //   fetchReportAndCity(value);
+  //     console.log("selectedStateid",value);
 
+  // };
 
-
-const handleCityChange = (value, index) => {
-  setSelectedCity(value);
-  setSelectedCityId(value);
-  // Additional logic if needed when the camp selection changes
-};
+  const handleCityChange = (value, index) => {
+    setSelectedCity(value);
+    setSelectedCityId(value);
+    // Additional logic if needed when the camp selection changes
+  };
   const fetchZone = async () => {
-
     const ApiUrl = `${BASE_URL}${'/basic/getZone'}`;
     try {
       const response = await fetch(ApiUrl, {
         method: 'GET',
-        
       });
 
       const result = await response.json();
@@ -225,9 +222,8 @@ const handleCityChange = (value, index) => {
   const handleZoneChange = (value, index) => {
     setSelectedZone(value);
     setSelectedZoneId(value);
-    console.log("selectedZoneid",value);
- 
-   
+    console.log('selectedZoneid', value);
+
     // Additional logic if needed when the camp selection changes
   };
 
@@ -319,7 +315,7 @@ const handleCityChange = (value, index) => {
         setCampDate(campDate);
         setCampName(reportInfo.camp_name);
         setAddress(reportInfo.address);
-        setSelectedState(parseInt(reportInfo.state_id))
+        setSelectedState(parseInt(reportInfo.state_id));
         setDoctor(reportInfo.doctor_name);
         setBrandReplaced(reportInfo.brand_replaced);
         setInstitute(reportInfo.hospital_name);
@@ -340,36 +336,42 @@ const handleCityChange = (value, index) => {
         setSelectedMr(selectedMrValue?.basic_id || '');
 
         // Find and set the selected state
-      const selectedStateValue = state.find(state => state.id == parseInt(reportInfo.state_id));
-     
-      console.log("selected state:", selectedStateValue?.id);
-      setSelectedState(selectedStateValue?.id|| '');
-    
-      const selectedCityValue = city.find(city => city.id == parseInt(reportInfo.city_id));
-      console.log("sta",city);
-      console.log("rpst",reportInfo.city_id);
-      console.log(typeof(reportInfo.city_id));
-      console.log("selected city:", selectedCityValue?.id);
-      setSelectedCity(selectedCityValue?.id || '');
+        const selectedStateValue = state.find(
+          state => state.id == parseInt(reportInfo.state_id),
+        );
 
-      // Find and set the selected zone
-      const selectedZoneValue = zone.find(zone => zone.zone_id == parseInt(reportInfo.zone_id));
-      console.log("selected zone:", selectedZoneValue?.zone_id);
-      setSelectedZone(selectedZoneValue?.zone_id || '');
-      setIsLoading(false);
+        console.log('selected state:', selectedStateValue?.id);
+        setSelectedState(selectedStateValue?.id || '');
 
-      if (
-        selectedStateValue?.id &&
-        selectedCityValue?.id &&
-        selectedZoneValue?.zone_id &&
-        selectedMrValue?.empcode &&
-        selectedStateValue.id !== '' &&
-        selectedCityValue.id !== '' &&
-        selectedZoneValue.zone_id !== '' &&
-        selectedMrValue.empcode !== '' 
-      ) {
-        setIsDataFetched(true);
-      }
+        const selectedCityValue = city.find(
+          city => city.id == parseInt(reportInfo.city_id),
+        );
+        console.log('sta', city);
+        console.log('rpst', reportInfo.city_id);
+        console.log(typeof reportInfo.city_id);
+        console.log('selected city:', selectedCityValue?.id);
+        setSelectedCity(selectedCityValue?.id || '');
+
+        // Find and set the selected zone
+        const selectedZoneValue = zone.find(
+          zone => zone.zone_id == parseInt(reportInfo.zone_id),
+        );
+        console.log('selected zone:', selectedZoneValue?.zone_id);
+        setSelectedZone(selectedZoneValue?.zone_id || '');
+        setIsLoading(false);
+
+        if (
+          selectedStateValue?.id &&
+          selectedCityValue?.id &&
+          selectedZoneValue?.zone_id &&
+          selectedMrValue?.empcode &&
+          selectedStateValue.id !== '' &&
+          selectedCityValue.id !== '' &&
+          selectedZoneValue.zone_id !== '' &&
+          selectedMrValue.empcode !== ''
+        ) {
+          setIsDataFetched(true);
+        }
       } else {
         console.log('Error fetching report info-:', result.message);
       }
@@ -380,7 +382,6 @@ const handleCityChange = (value, index) => {
       setIsLoading(false);
     }
   };
-
 
   const handleMrChange = itemValue => {
     setSelectedMr(itemValue);
@@ -438,14 +439,12 @@ const handleCityChange = (value, index) => {
     setTextInputValue(name);
     setIsDropdownVisible(false);
   };
-  const handleStateChange = (itemValue) => {
+  const handleStateChange = itemValue => {
     setSelectedState(itemValue);
-  
+
     // Find the MR info for the selected MR based on empcode
     const selectedStateInfo = state.find(mr => mr.id === itemValue) || {};
     fetchReportAndCity(itemValue);
-  
-    
   };
 
   const handleCampDateChange = (event, selectedDate) => {
@@ -475,13 +474,13 @@ const handleCityChange = (value, index) => {
           // Define the payload using the retrieved userId
           const payload = {
             userId: userId, // Use the retrieved userId here
-           address:address,
-            state:selectedState,
+            address: address,
+            state: selectedState,
             city: selectedCity,
-            zone:selectedZone,
+            zone: selectedZone,
             brandId: selectedMr,
             doctorName: doctor,
-            brandReplaced:brandReplaced,
+            brandReplaced: brandReplaced,
             campDate: formattedCampDate,
             hospitalName: institute,
             orId: crid,
@@ -528,8 +527,6 @@ const handleCityChange = (value, index) => {
         alert('Error submitting data. Please try again later.');
       });
   };
-
-
 
   const deleteImage = async crimgid => {
     try {
@@ -644,39 +641,98 @@ const handleCityChange = (value, index) => {
   //     prevPreviews.filter((_, index) => index !== indexToDelete)
   //   );
   // };
+  // const handleImageUpload = async () => {
+  //   try {
+  //     if (imageUris.length >= 10) {
+  //       // If there are already 3 images, show an alert
+  //       alert('You can upload a maximum of 10 images');
+  //       return;
+  //     }
+  //     const images = await ImagePicker.openPicker({
+  //       mediaType: 'photo',
+  //       multiple: true, // Allow multiple image selection
+  //     });
+  //     if (images.length + imageUris.length > 10) {
+  //       // If the total number of selected images exceeds 3, show an alert
+  //       alert('You can upload a maximum of 10 images');
+  //       return;
+  //     }
+
+  //     const previews = images.map((image, index) => (
+  //       <TouchableOpacity key={index} onPress={() => handleDeleteImage(index)}>
+  //         <Image source={{uri: image.path}} style={styles.previewImage} />
+  //         <Text style={styles.deleteButton}>Delete</Text>
+  //       </TouchableOpacity>
+  //     ));
+
+  //     // Store image URIs directly in an array
+  //     const newImageUris = images.map(image => image.path);
+
+  //     setImagePreviews(prevPreviews => [...prevPreviews, ...previews]);
+
+  //     // Store the image URIs in another state variable
+  //     setImageUris(prevImageUris => [...prevImageUris, ...newImageUris]);
+  //   } catch (error) {
+  //     // Handle the error, e.g., if the user cancels the selection
+  //     console.error('Image picker error:', error);
+  //   }
+  // };
+
   const handleImageUpload = async () => {
     try {
       if (imageUris.length >= 10) {
-        // If there are already 3 images, show an alert
-        alert('You can upload a maximum of 10 images');
-        return;
-      }
-      const images = await ImagePicker.openPicker({
-        mediaType: 'photo',
-        multiple: true, // Allow multiple image selection
-      });
-      if (images.length + imageUris.length > 10) {
-        // If the total number of selected images exceeds 3, show an alert
         alert('You can upload a maximum of 10 images');
         return;
       }
 
-      const previews = images.map((image, index) => (
+      const images = await ImagePicker.openPicker({
+        mediaType: 'photo',
+        multiple: true,
+      });
+
+      if (images.length + imageUris.length > 10) {
+        alert('You can upload a maximum of 10 images');
+        return;
+      }
+
+      const compressedImages = await Promise.all(
+        images.map(async image => {
+          try {
+            const imageFile = await fetch(image.path);
+            const imageBlob = await imageFile.blob();
+            const imageSize = imageBlob.size / (1024 * 1024); // Size in MB
+
+            if (imageSize <= 1) {
+              return image.path; // Skip compression if size is <= 1 MB
+            }
+
+            const compressedImage = await ImageResizer.createResizedImage(
+              image.path,
+              image.width,
+              image.height,
+              'JPEG', // You can also use 'PNG' or 'WEBP'
+              80, // Compression quality, 0-100
+            );
+
+            return compressedImage.uri;
+          } catch (error) {
+            console.error('Image compression error:', error);
+            return image.path; // Fallback to original image if compression fails
+          }
+        }),
+      );
+
+      const previews = compressedImages.map((uri, index) => (
         <TouchableOpacity key={index} onPress={() => handleDeleteImage(index)}>
-          <Image source={{uri: image.path}} style={styles.previewImage} />
+          <Image source={{uri}} style={styles.previewImage} />
           <Text style={styles.deleteButton}>Delete</Text>
         </TouchableOpacity>
       ));
 
-      // Store image URIs directly in an array
-      const newImageUris = images.map(image => image.path);
-
       setImagePreviews(prevPreviews => [...prevPreviews, ...previews]);
 
-      // Store the image URIs in another state variable
-      setImageUris(prevImageUris => [...prevImageUris, ...newImageUris]);
+      setImageUris(prevImageUris => [...prevImageUris, ...compressedImages]);
     } catch (error) {
-      // Handle the error, e.g., if the user cancels the selection
       console.error('Image picker error:', error);
     }
   };
@@ -778,16 +834,15 @@ const handleCityChange = (value, index) => {
 
   return (
     <LinearGradient colors={['#9cbddd', '#9cbddd']} style={styles.container}>
-    {isLoading && (
+      {isLoading && (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#000953" />
         </View>
       )}
       <View style={styles.container}>
-      
         <ScrollView>
           <View style={styles.form}>
-          <Text style={styles.datePickerLabel}>Select Brand Name:</Text>
+            <Text style={styles.datePickerLabel}>Select Brand Name:</Text>
             <View style={styles.pickcontainer}>
               <Picker
                 selectedValue={selectedMr}
@@ -811,7 +866,7 @@ const handleCityChange = (value, index) => {
               style={styles.input}
               outlineColor="#000953"
               activeOutlineColor="#08a5d8"
-              placeholder='Type here'
+              placeholder="Type here"
             />
             <Text style={styles.datePickerLabel}>Doctor Name</Text>
             <TextInput
@@ -822,7 +877,7 @@ const handleCityChange = (value, index) => {
               style={styles.input}
               outlineColor="#000953"
               activeOutlineColor="#08a5d8"
-              placeholder='Type here'
+              placeholder="Type here"
             />
             <View style={styles.datePickerContainer}>
               <Text style={styles.datePickerLabel} onPress={showCampDate}>
@@ -858,66 +913,72 @@ const handleCityChange = (value, index) => {
               style={styles.input}
               outlineColor="#000953"
               activeOutlineColor="#08a5d8"
-              placeholder='Type here'
+              placeholder="Type here"
             />
-           <Text style={styles.datePickerLabel}>Camp Address</Text>
-          <TextInput
-            // label="HQ"
-            value={address}
-            onChangeText={text => setAddress(text)}
-            mode="outlined"
-            style={styles.input}
-            outlineColor="#000953"
-            activeOutlineColor="#08a5d8"
-            placeholder='Type here'
-          />
-           <Text style={styles.datePickerLabel}>State:</Text>
-          <View style={styles.pickcontainer}>
-            <Picker
-             selectedValue={selectedState}
-              style={styles.picker}
-              onValueChange={(value, index) => handleStateChange(value, index)}>
-              {state.map((state, index) => (
-                <Picker.Item
-                  key={state.id}
-                  label={state.state_name}
-                  value={state.id}
-                />
-              ))}
-            </Picker>
-          </View>
-        
-            <Text style={styles.datePickerLabel}>City:</Text>
-          <View style={styles.pickcontainer}>
-            <Picker
-              selectedValue={selectedCity}
-              style={styles.picker}
-              onValueChange={(value, index) => handleCityChange(value, index)}>
-              {city.map((city, index) => (
-                <Picker.Item
-                  key={city.id}
-                  label={city.city_name}
-                  value={city.id}
-                />
-              ))}
-            </Picker>
-          </View>
+            <Text style={styles.datePickerLabel}>Camp Address</Text>
+            <TextInput
+              // label="HQ"
+              value={address}
+              onChangeText={text => setAddress(text)}
+              mode="outlined"
+              style={styles.input}
+              outlineColor="#000953"
+              activeOutlineColor="#08a5d8"
+              placeholder="Type here"
+            />
+            <Text style={styles.datePickerLabel}>State:</Text>
+            <View style={styles.pickcontainer}>
+              <Picker
+                selectedValue={selectedState}
+                style={styles.picker}
+                onValueChange={(value, index) =>
+                  handleStateChange(value, index)
+                }>
+                {state.map((state, index) => (
+                  <Picker.Item
+                    key={state.id}
+                    label={state.state_name}
+                    value={state.id}
+                  />
+                ))}
+              </Picker>
+            </View>
 
-          <Text style={styles.datePickerLabel}>Zone:</Text>
-          <View style={styles.pickcontainer}>
-            <Picker
-              selectedValue={selectedZone}
-              style={styles.picker}
-              onValueChange={(value, index) => handleZoneChange(value, index)}>
-              {zone.map((zone, index) => (
-                <Picker.Item
-                  key={zone.zone_id}
-                  label={zone.zone_name}
-                  value={zone.zone_id}
-                />
-              ))}
-            </Picker>
-          </View>
+            <Text style={styles.datePickerLabel}>City:</Text>
+            <View style={styles.pickcontainer}>
+              <Picker
+                selectedValue={selectedCity}
+                style={styles.picker}
+                onValueChange={(value, index) =>
+                  handleCityChange(value, index)
+                }>
+                {city.map((city, index) => (
+                  <Picker.Item
+                    key={city.id}
+                    label={city.city_name}
+                    value={city.id}
+                  />
+                ))}
+              </Picker>
+            </View>
+
+            <Text style={styles.datePickerLabel}>Zone:</Text>
+            <View style={styles.pickcontainer}>
+              <Picker
+                selectedValue={selectedZone}
+                style={styles.picker}
+                onValueChange={(value, index) =>
+                  handleZoneChange(value, index)
+                }>
+                {zone.map((zone, index) => (
+                  <Picker.Item
+                    key={zone.zone_id}
+                    label={zone.zone_name}
+                    value={zone.zone_id}
+                  />
+                ))}
+              </Picker>
+            </View>
 
             <Text style={styles.datePickerLabel}>
               Upload a maximum of 10 images.
@@ -956,7 +1017,7 @@ const handleCityChange = (value, index) => {
               outlineColor="#000953"
               activeOutlineColor="#08a5d8"
               style={styles.input}
-              placeholder='Type here'
+              placeholder="Type here"
             />
             {/* <Text style={styles.desc}>
             (Description: 1st choice of Brand for Dry-Eye management; Include comments from doctor, Patient feedback, any other necessary information)
@@ -994,9 +1055,9 @@ const styles = StyleSheet.create({
     bottom: 0,
     zIndex: 1, // Place it above other UI components
   },
-  desc:{
-    color:'red',
-    fontSize:10
+  desc: {
+    color: 'red',
+    fontSize: 10,
   },
   addbtn: {
     backgroundColor: '#000953',
