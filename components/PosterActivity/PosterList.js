@@ -84,7 +84,7 @@ const PosterList = () => {
               },
               body: JSON.stringify({
                 userId: userId, // Use the retrieved userId
-                subCatId:id,
+                subCatId: id,
               }),
             })
               .then(response => response.json())
@@ -151,10 +151,10 @@ const PosterList = () => {
       <View style={styles.userItem}>
         <Image
           source={
-    item.doctor_img
-      ? {uri: ProfileUrl + item.doctor_img}
-      : require('./Images/Profile.jpg')
-  }
+            item.doctor_img
+              ? {uri: ProfileUrl + item.doctor_img}
+              : require('./Images/Profile.jpg')
+          }
           style={styles.userImage}
         />
         <View style={styles.userInfo}>
@@ -299,14 +299,14 @@ const styles = StyleSheet.create({
   },
   columnHeader: {
     textAlign: 'left',
-    paddingLeft:20,
+    paddingLeft: 20,
     color: '#fff',
     fontWeight: 'bold',
     flex: 1,
   },
   columnHeader1: {
     textAlign: 'center',
-    paddingLeft:20,
+    paddingLeft: 20,
     color: '#fff',
     fontWeight: 'bold',
     flex: 1,
