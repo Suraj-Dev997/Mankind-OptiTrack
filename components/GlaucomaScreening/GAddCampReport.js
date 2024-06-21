@@ -76,20 +76,21 @@ const GAddCampReport = () => {
   const [selectedAnswers, setSelectedAnswers] = useState({});
   const [selectedItems, setSelectedItems] = useState([]);
 
-  
   useEffect(() => {
     const fetchData = async () => {
       try {
         // Fetch state first
+        setIsLoading(true);
         await fetchState();
-        await  fetchCity();
+        await fetchCity();
         await fetchZone();
         await fetchRepList();
+        setIsLoading(false);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error('Error fetching data:', error);
       }
     };
-  
+
     // Call fetchData function
     fetchData();
   }, []);
@@ -145,7 +146,7 @@ const GAddCampReport = () => {
           outlineColor="#000953"
           activeOutlineColor="#08a5d8"
           keyboardType="numeric"
-          placeholder='Type here'
+          placeholder="Type here"
         />
       </View>
     ));
@@ -180,12 +181,10 @@ const GAddCampReport = () => {
     // Additional logic if needed when the camp selection changes
   };
   const fetchState = async () => {
-
     const ApiUrl = `${BASE_URL}${'/basic/getStates'}`;
     try {
       const response = await fetch(ApiUrl, {
         method: 'GET',
-        
       });
 
       const result = await response.json();
@@ -195,7 +194,7 @@ const GAddCampReport = () => {
       // Set default selected camp if needed
       // setSelectedCamp(result.data[0]?.camp_name || '');
       if (result.length > 0) {
-       await setSelectedStateId(result[0].id);
+        await setSelectedStateId(result[0].id);
         console.log('set centerid', result[0].id);
       }
     } catch (error) {
@@ -206,53 +205,49 @@ const GAddCampReport = () => {
   const handleStateChange = (value, index) => {
     setSelectedState(value);
     setSelectedStateId(value);
-  fetchCity(value);
-    console.log("selectedStateid",value);
-    
-   
-};
-const fetchCity = async (value) => {
-  const payload ={stateId: !value ? 1:value}
-  setSelectedStateId(value);
-  console.log("pay id",payload);
-  console.log("SState id",selectedStateId);
-  const ApiUrl = `${BASE_URL}${'/basic/getCities'}`;
-  try {
-    const response = await fetch(ApiUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    });
+    fetchCity(value);
+    console.log('selectedStateid', value);
+  };
+  const fetchCity = async value => {
+    const payload = {stateId: !value ? 1 : value};
+    setSelectedStateId(value);
+    console.log('pay id', payload);
+    console.log('SState id', selectedStateId);
+    const ApiUrl = `${BASE_URL}${'/basic/getCities'}`;
+    try {
+      const response = await fetch(ApiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
 
-    const result = await response.json();
+      const result = await response.json();
 
-    console.log(result);
-    setCity(result);
-    // Set default selected camp if needed
-    // setSelectedCamp(result.data[0]?.camp_name || '');
-    if (result.length > 0) {
-      setSelectedCityId(result[0].id);
-      console.log('set centerid', result[0].id);
+      console.log(result);
+      setCity(result);
+      // Set default selected camp if needed
+      // setSelectedCamp(result.data[0]?.camp_name || '');
+      if (result.length > 0) {
+        setSelectedCityId(result[0].id);
+        console.log('set centerid', result[0].id);
+      }
+    } catch (error) {
+      console.error('Error fetching City:', error.message);
     }
-  } catch (error) {
-    console.error('Error fetching City:', error.message);
-  }
-};
+  };
 
-const handleCityChange = (value, index) => {
-  setSelectedCity(value);
-  setSelectedCityId(value);
-  // Additional logic if needed when the camp selection changes
-};
+  const handleCityChange = (value, index) => {
+    setSelectedCity(value);
+    setSelectedCityId(value);
+    // Additional logic if needed when the camp selection changes
+  };
   const fetchZone = async () => {
-
     const ApiUrl = `${BASE_URL}${'/basic/getZone'}`;
     try {
       const response = await fetch(ApiUrl, {
         method: 'GET',
-        
       });
 
       const result = await response.json();
@@ -273,9 +268,8 @@ const handleCityChange = (value, index) => {
   const handleZoneChange = (value, index) => {
     setSelectedZone(value);
     setSelectedZoneId(value);
-    console.log("selectedZoneid",value);
- 
-   
+    console.log('selectedZoneid', value);
+
     // Additional logic if needed when the camp selection changes
   };
 
@@ -388,7 +382,7 @@ const handleCityChange = (value, index) => {
     }
   };
   const submitData = () => {
-    if (Object.keys(selectedAnswers).length === 0 || !address ) {
+    if (Object.keys(selectedAnswers).length === 0 || !address) {
       // Display an alert message if any required fields are empty
       alert('Please fill in all required fields');
       return;
@@ -412,9 +406,9 @@ const handleCityChange = (value, index) => {
             doc3: doctor3,
             doc4: doctor4,
             address: address,
-            state:selectedStateId,
+            state: selectedStateId,
             city: selectedCityId,
-            zone:selectedZoneId,
+            zone: selectedZoneId,
           };
           console.log('Payload after', payload);
           const ApiUrl = `${BASE_URL}${'/glaucomaReport/addReportWithInfo'}`;
@@ -458,7 +452,7 @@ const handleCityChange = (value, index) => {
         setLoading(false);
       });
   };
-  const submitData1 = (crid) => {
+  const submitData1 = crid => {
     console.log('Selected item', selectedItems);
     if (!selectedAnswers) {
       // Display an alert message if any required fields are empty
@@ -535,11 +529,11 @@ const handleCityChange = (value, index) => {
   };
   return (
     <LinearGradient colors={['#9cbddd', '#9cbddd']} style={styles.container}>
-      {/* {isLoading && (
+      {isLoading && (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#000953" />
         </View>
-      )} */}
+      )}
       <ScrollView style={styles.container}>
         <View style={styles.form}>
           <View style={styles.datePickerContainer}>
@@ -581,7 +575,7 @@ const handleCityChange = (value, index) => {
               ))}
             </Picker>
           </View>
-          
+
           <Text style={styles.datePickerLabel}>Camp Address</Text>
           <TextInput
             // label="HQ"
@@ -591,12 +585,12 @@ const handleCityChange = (value, index) => {
             style={styles.input}
             outlineColor="#000953"
             activeOutlineColor="#08a5d8"
-            placeholder='Type here'
+            placeholder="Type here"
           />
-           <Text style={styles.datePickerLabel}>State:</Text>
+          <Text style={styles.datePickerLabel}>State:</Text>
           <View style={styles.pickcontainer}>
             <Picker
-             selectedValue={selectedState}
+              selectedValue={selectedState}
               style={styles.picker}
               onValueChange={(value, index) => handleStateChange(value, index)}>
               {state.map((state, index) => (
@@ -608,8 +602,8 @@ const handleCityChange = (value, index) => {
               ))}
             </Picker>
           </View>
-        
-            <Text style={styles.datePickerLabel}>City:</Text>
+
+          <Text style={styles.datePickerLabel}>City:</Text>
           <View style={styles.pickcontainer}>
             <Picker
               selectedValue={selectedCity}
@@ -649,7 +643,7 @@ const handleCityChange = (value, index) => {
             style={styles.input}
             outlineColor="#000953"
             activeOutlineColor="#08a5d8"
-            placeholder='Type here'
+            placeholder="Type here"
           />
           {/* <Text style={styles.datePickerLabel}>Doctor 2 Name</Text>
           <TextInput
@@ -683,47 +677,47 @@ const handleCityChange = (value, index) => {
           /> */}
           {numDoctors >= 2 && (
             <>
-            <Text style={styles.datePickerLabel}>Doctor 2 Name</Text>
-          <TextInput
-            // label="HQ"
-            value={doctor2}
-            onChangeText={text => setDoctor2(text)}
-            mode="outlined"
-            style={styles.input}
-            outlineColor="#000953"
-            activeOutlineColor="#08a5d8"
-            placeholder='Type here'
-          />
+              <Text style={styles.datePickerLabel}>Doctor 2 Name</Text>
+              <TextInput
+                // label="HQ"
+                value={doctor2}
+                onChangeText={text => setDoctor2(text)}
+                mode="outlined"
+                style={styles.input}
+                outlineColor="#000953"
+                activeOutlineColor="#08a5d8"
+                placeholder="Type here"
+              />
             </>
           )}
           {numDoctors >= 3 && (
             <>
-            <Text style={styles.datePickerLabel}>Doctor 3 Name</Text>
-          <TextInput
-            // label="HQ"
-            value={doctor3}
-            onChangeText={text => setDoctor3(text)}
-            mode="outlined"
-            style={styles.input}
-            outlineColor="#000953"
-            activeOutlineColor="#08a5d8"
-            placeholder='Type here'
-          />
+              <Text style={styles.datePickerLabel}>Doctor 3 Name</Text>
+              <TextInput
+                // label="HQ"
+                value={doctor3}
+                onChangeText={text => setDoctor3(text)}
+                mode="outlined"
+                style={styles.input}
+                outlineColor="#000953"
+                activeOutlineColor="#08a5d8"
+                placeholder="Type here"
+              />
             </>
           )}
           {numDoctors >= 4 && (
             <>
-            <Text style={styles.datePickerLabel}>Doctor 4 Name</Text>
-          <TextInput
-            // label="HQ"
-            value={doctor4}
-            onChangeText={text => setDoctor4(text)}
-            mode="outlined"
-            style={styles.input}
-            outlineColor="#000953"
-            activeOutlineColor="#08a5d8"
-            placeholder='Type here'
-          />
+              <Text style={styles.datePickerLabel}>Doctor 4 Name</Text>
+              <TextInput
+                // label="HQ"
+                value={doctor4}
+                onChangeText={text => setDoctor4(text)}
+                mode="outlined"
+                style={styles.input}
+                outlineColor="#000953"
+                activeOutlineColor="#08a5d8"
+                placeholder="Type here"
+              />
             </>
           )}
           <View style={styles.buttonContainer}>
@@ -781,11 +775,11 @@ const handleCityChange = (value, index) => {
           {renderQuestions()}
           <LinearGradient colors={['#000953', '#092d4f']} style={styles.addbtn}>
             <Button labelStyle={styles.addbtnText} onPress={submitData}>
-            {loading ? (
-                    <ActivityIndicator size="small" color="#fff" />
-                  ) : (
-                    'Next'
-                  )}
+              {loading ? (
+                <ActivityIndicator size="small" color="#fff" />
+              ) : (
+                'Next'
+              )}
             </Button>
           </LinearGradient>
         </View>

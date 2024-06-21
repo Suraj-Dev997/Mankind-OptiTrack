@@ -9,7 +9,7 @@ import {
   Alert,
   ActivityIndicator,
 } from 'react-native';
-import {TextInput, Button, Avatar,} from 'react-native-paper';
+import {TextInput, Button, Avatar} from 'react-native-paper';
 import ImagePicker from 'react-native-image-crop-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {Picker} from '@react-native-picker/picker';
@@ -19,6 +19,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {BASE_URL} from '../Configuration/Config';
 import LinearGradient from 'react-native-linear-gradient';
 import {format} from 'date-fns';
+import ImageResizer from '@bam.tech/react-native-image-resizer';
 
 const GUpdateCampImages = () => {
   const navigation = useNavigation();
@@ -169,43 +170,101 @@ const GUpdateCampImages = () => {
   //     prevPreviews.filter((_, index) => index !== indexToDelete)
   //   );
   // };
+  // const handleImageUpload = async () => {
+  //   try {
+  //     if (imageUris.length >= 10) {
+  //       // If there are already 3 images, show an alert
+  //       alert('You can upload a maximum of 10 images');
+  //       return;
+  //     }
+  //     const images = await ImagePicker.openPicker({
+  //       mediaType: 'photo',
+  //       multiple: true, // Allow multiple image selection
+  //     });
+  //     if (images.length + imageUris.length > 10) {
+  //       // If the total number of selected images exceeds 3, show an alert
+  //       alert('You can upload a maximum of 10 images');
+  //       return;
+  //     }
+
+  //     const previews = images.map((image, index) => (
+  //       <TouchableOpacity key={index} onPress={() => handleDeleteImage(index)}>
+  //         <Image source={{uri: image.path}} style={styles.previewImage} />
+  //         <Text style={styles.deleteButton}>Delete</Text>
+  //       </TouchableOpacity>
+  //     ));
+
+  //     // Store image URIs directly in an array
+  //     const newImageUris = images.map(image => image.path);
+
+  //     setImagePreviews(prevPreviews => [...prevPreviews, ...previews]);
+
+  //     // Store the image URIs in another state variable
+  //     setImageUris(prevImageUris => [...prevImageUris, ...newImageUris]);
+  //   } catch (error) {
+  //     // Handle the error, e.g., if the user cancels the selection
+  //     console.error('Image picker error:', error);
+  //   }
+  // };
+
   const handleImageUpload = async () => {
     try {
       if (imageUris.length >= 10) {
-        // If there are already 3 images, show an alert
-        alert('You can upload a maximum of 10 images');
-        return;
-      }
-      const images = await ImagePicker.openPicker({
-        mediaType: 'photo',
-        multiple: true, // Allow multiple image selection
-      });
-      if (images.length + imageUris.length > 10) {
-        // If the total number of selected images exceeds 3, show an alert
         alert('You can upload a maximum of 10 images');
         return;
       }
 
-      const previews = images.map((image, index) => (
+      const images = await ImagePicker.openPicker({
+        mediaType: 'photo',
+        multiple: true,
+      });
+
+      if (images.length + imageUris.length > 10) {
+        alert('You can upload a maximum of 10 images');
+        return;
+      }
+
+      const compressedImages = await Promise.all(
+        images.map(async image => {
+          try {
+            const imageFile = await fetch(image.path);
+            const imageBlob = await imageFile.blob();
+            const imageSize = imageBlob.size / (1024 * 1024); // Size in MB
+
+            if (imageSize <= 1) {
+              return image.path; // Skip compression if size is <= 1 MB
+            }
+
+            const compressedImage = await ImageResizer.createResizedImage(
+              image.path,
+              image.width,
+              image.height,
+              'JPEG', // You can also use 'PNG' or 'WEBP'
+              80, // Compression quality, 0-100
+            );
+
+            return compressedImage.uri;
+          } catch (error) {
+            console.error('Image compression error:', error);
+            return image.path; // Fallback to original image if compression fails
+          }
+        }),
+      );
+
+      const previews = compressedImages.map((uri, index) => (
         <TouchableOpacity key={index} onPress={() => handleDeleteImage(index)}>
-          <Image source={{uri: image.path}} style={styles.previewImage} />
+          <Image source={{uri}} style={styles.previewImage} />
           <Text style={styles.deleteButton}>Delete</Text>
         </TouchableOpacity>
       ));
 
-      // Store image URIs directly in an array
-      const newImageUris = images.map(image => image.path);
-
       setImagePreviews(prevPreviews => [...prevPreviews, ...previews]);
 
-      // Store the image URIs in another state variable
-      setImageUris(prevImageUris => [...prevImageUris, ...newImageUris]);
+      setImageUris(prevImageUris => [...prevImageUris, ...compressedImages]);
     } catch (error) {
-      // Handle the error, e.g., if the user cancels the selection
       console.error('Image picker error:', error);
     }
   };
-
   const handleDeleteImage = indexToDelete => {
     setImagePreviews(prevPreviews =>
       prevPreviews.filter((_, index) => index !== indexToDelete),
@@ -341,7 +400,7 @@ const GUpdateCampImages = () => {
               outlineColor="#000953"
               activeOutlineColor="#08a5d8"
               style={styles.input}
-              placeholder='Type here'
+              placeholder="Type here"
             />
             {/* <Text style={styles.desc}>
             (Description: 1st choice of Brand for Dry-Eye management; Include comments from doctor, Patient feedback, any other necessary information)
@@ -390,9 +449,9 @@ const GUpdateCampImages = () => {
 };
 
 const styles = StyleSheet.create({
-  desc:{
-    color:'red',
-    fontSize:10
+  desc: {
+    color: 'red',
+    fontSize: 10,
   },
   addbtn: {
     backgroundColor: '#000953',
