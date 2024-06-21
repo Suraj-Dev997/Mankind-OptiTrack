@@ -8,6 +8,7 @@ import {
   Image,
   TouchableOpacity,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import {Button, Searchbar, IconButton} from 'react-native-paper';
 import {useRoute} from '@react-navigation/native';
@@ -15,6 +16,7 @@ import {useNavigation} from '@react-navigation/native';
 import {BASE_URL} from '../Configuration/Config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import LinearGradient from 'react-native-linear-gradient';
+import useNetworkStatus from '../useNetworkStatus';
 
 const PosterList = () => {
   const route = useRoute();
@@ -22,6 +24,18 @@ const PosterList = () => {
   const [searchText, setSearchText] = useState('');
   const [users, setUsers] = useState([]); // Store fetched data
   const [isLoading, setIsLoading] = useState(true);
+
+  const isConnected = useNetworkStatus();
+
+  useEffect(() => {
+    if (!isConnected) {
+      Alert.alert(
+        'No Internet Connection',
+        'Please check your internet connection.',
+        [{text: 'OK', onPress: () => console.log('OK Pressed')}],
+      );
+    }
+  }, [isConnected]);
 
   const handleSearchTextChange = query => {
     setSearchText(query);

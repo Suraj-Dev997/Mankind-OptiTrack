@@ -8,6 +8,7 @@ import {
   Image,
   TouchableOpacity,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import {Button, Searchbar, IconButton} from 'react-native-paper';
 import {useRoute} from '@react-navigation/native';
@@ -15,6 +16,7 @@ import {useNavigation} from '@react-navigation/native';
 import {BASE_URL} from '../Configuration/Config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import LinearGradient from 'react-native-linear-gradient';
+import useNetworkStatus from '../useNetworkStatus';
 
 const NIPosterList = () => {
   const route = useRoute();
@@ -22,6 +24,18 @@ const NIPosterList = () => {
   const [searchText, setSearchText] = useState('');
   const [users, setUsers] = useState([]); // Store fetched data
   const [isLoading, setIsLoading] = useState(true);
+
+  const isConnected = useNetworkStatus();
+
+  useEffect(() => {
+    if (!isConnected) {
+      Alert.alert(
+        'No Internet Connection',
+        'Please check your internet connection.',
+        [{text: 'OK', onPress: () => console.log('OK Pressed')}],
+      );
+    }
+  }, [isConnected]);
 
   const handleSearchTextChange = query => {
     setSearchText(query);
@@ -84,7 +98,7 @@ const NIPosterList = () => {
               },
               body: JSON.stringify({
                 userId: userId, // Use the retrieved userId
-                subCatId:id,
+                subCatId: id,
               }),
             })
               .then(response => response.json())
@@ -299,14 +313,14 @@ const styles = StyleSheet.create({
   },
   columnHeader: {
     textAlign: 'left',
-    paddingLeft:20,
+    paddingLeft: 20,
     color: '#fff',
     fontWeight: 'bold',
     flex: 1,
   },
   columnHeader1: {
     textAlign: 'center',
-    paddingLeft:20,
+    paddingLeft: 20,
     color: '#fff',
     fontWeight: 'bold',
     flex: 1,
