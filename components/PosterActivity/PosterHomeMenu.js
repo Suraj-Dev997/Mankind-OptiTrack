@@ -25,11 +25,6 @@ export const PosterHomeMenu = props => {
   const [totalDoctors, setTotalDoctors] = useState(0);
   const navigation = useNavigation();
 
-
-
-
- 
-
   useEffect(() => {
     // Fetch subcategories from the API
     const ApiUrl = `${BASE_URL}${'/cat/getPosterCategory'}`;
@@ -49,17 +44,16 @@ export const PosterHomeMenu = props => {
   }, []);
 
   const navigateToCategoryScreen = (id, name) => {
-    switch(id) {
+    switch (id) {
       case 1:
         navigation.navigate('PosterSubMenu', {id: id, name: name});
-break;
-case 2:
-  navigation.navigate('PosterSubMenu', {id: id, name: name});
-break;
-case 3:
-  navigation.navigate('PosterList', {id: id, name: name});
-break;
-   
+        break;
+      case 2:
+        navigation.navigate('PosterSubMenu', {id: id, name: name});
+        break;
+      case 7:
+        navigation.navigate('PosterList', {id: id, name: name});
+        break;
     }
   };
 
@@ -78,8 +72,6 @@ break;
         <ScrollView>
           {/* Static buttons for the DashboardList category */}
 
-         
-
           {subcategoryRows.map((row, rowIndex) => (
             <View key={rowIndex} style={styles.container1}>
               {row.map((subcategory, subcategoryIndex) => (
@@ -97,12 +89,11 @@ break;
                     navigateToCategoryScreen(subcategory.id, subcategory.name)
                   } // Use onTouchStart for touch event
                 >
-              <IconButton
-        icon="file-image-plus"
-        iconColor="#fff"
-        size={30}
-        
-      />
+                  <IconButton
+                    icon="file-image-plus"
+                    iconColor="#fff"
+                    size={30}
+                  />
                   <TouchableOpacity>
                     <Text style={styles.buttonText}>{subcategory.name}</Text>
                   </TouchableOpacity>
@@ -117,22 +108,18 @@ break;
       return 'An error occurred while generating content.';
     }
   };
-  const renderIcon = (iconName) => {
+  const renderIcon = iconName => {
     switch (iconName) {
       case 1:
-        return  <IconButton
-        icon="file-image-plus"
-        iconColor="#fff"
-        size={30}
-        
-      />;
+        return <IconButton icon="file-image-plus" iconColor="#fff" size={30} />;
       case 2:
-        return <IconButton
-        icon="file-document-edit-outline"
-        iconColor="#fff"
-        size={30}
-        
-      />;
+        return (
+          <IconButton
+            icon="file-document-edit-outline"
+            iconColor="#fff"
+            size={30}
+          />
+        );
       default:
         return null;
     }
@@ -140,12 +127,12 @@ break;
 
   return (
     <ImageBackground
-    source={require('./Images/bg3.jpg')}
-    style={styles.backgroundImage}>
-     {/* <LinearGradient colors={['#9cbddd', '#b4b2db']} style={styles.container}> */}
+      source={require('./Images/bg3.jpg')}
+      style={styles.backgroundImage}>
+      {/* <LinearGradient colors={['#9cbddd', '#b4b2db']} style={styles.container}> */}
       <StatusBar backgroundColor="#000953" />
       <View>{getContentBasedOnCategory()}</View>
-     {/* </LinearGradient> */}
+      {/* </LinearGradient> */}
     </ImageBackground>
   );
 };

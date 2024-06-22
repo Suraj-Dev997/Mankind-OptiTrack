@@ -267,7 +267,13 @@ const OPUploadCampImages = () => {
     setShowCampDatePicker(true);
   };
   const submitData = () => {
-    if (!imageUris || !doctor || !institute || !address) {
+    console.log('image ur', imageUris);
+    if (!imageUris || imageUris.length === 0) {
+      // Display an alert message if any required fields are empty
+      alert('Please select Image');
+      return;
+    }
+    if (!doctor || !institute || !address) {
       // Display an alert message if any required fields are empty
       alert('Please fill in all required fields');
       return;

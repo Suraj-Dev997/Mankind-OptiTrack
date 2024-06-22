@@ -25,11 +25,6 @@ export const PosterSubMenu = props => {
   const [totalDoctors, setTotalDoctors] = useState(0);
   const navigation = useNavigation();
 
-
-
-
- 
-
   useEffect(() => {
     // Fetch subcategories from the API
     const ApiUrl = `${BASE_URL}/cat/getPosterSubCategory`;
@@ -39,7 +34,7 @@ export const PosterSubMenu = props => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ pcatId: id }), // Your payload here
+      body: JSON.stringify({pcatId: id}), // Your payload here
     })
       .then(response => response.json())
       .then(data => {
@@ -56,23 +51,26 @@ export const PosterSubMenu = props => {
   }, [id]);
 
   const navigateToCategoryScreen = (id, name) => {
-    switch(id) {
-        case 1:
-            navigation.navigate('PosterList', {id: id, name: name});
-    break;
-    case 4:
+    switch (id) {
+      case 1:
         navigation.navigate('PosterList', {id: id, name: name});
-    break;
-    case 5:
+        break;
+      case 2:
         navigation.navigate('NIPosterList', {id: id, name: name});
-    break;
-    case 6:
-      navigation.navigate('NIPosterList', {id: id, name: name});
-  break;
-
+        break;
+      case 3:
+        navigation.navigate('PosterList', {id: id, name: name});
+        break;
+      case 4:
+        navigation.navigate('PosterList', {id: id, name: name});
+        break;
+      case 5:
+        navigation.navigate('NIPosterList', {id: id, name: name});
+        break;
+      case 6:
+        navigation.navigate('PosterList', {id: id, name: name});
+        break;
     }
-   
-   
   };
 
   const screenWidth = Dimensions.get('window').width;
@@ -89,8 +87,6 @@ export const PosterSubMenu = props => {
       return (
         <ScrollView>
           {/* Static buttons for the DashboardList category */}
-
-         
 
           {subcategoryRows.map((row, rowIndex) => (
             <View key={rowIndex} style={styles.container1}>
@@ -109,12 +105,11 @@ export const PosterSubMenu = props => {
                     navigateToCategoryScreen(subcategory.id, subcategory.name)
                   } // Use onTouchStart for touch event
                 >
-              <IconButton
-        icon="file-image-plus"
-        iconColor="#fff"
-        size={30}
-        
-      />
+                  <IconButton
+                    icon="file-image-plus"
+                    iconColor="#fff"
+                    size={30}
+                  />
                   <TouchableOpacity>
                     <Text style={styles.buttonText}>{subcategory.name}</Text>
                   </TouchableOpacity>
@@ -129,22 +124,18 @@ export const PosterSubMenu = props => {
       return 'An error occurred while generating content.';
     }
   };
-  const renderIcon = (iconName) => {
+  const renderIcon = iconName => {
     switch (iconName) {
       case 1:
-        return  <IconButton
-        icon="file-image-plus"
-        iconColor="#fff"
-        size={30}
-        
-      />;
+        return <IconButton icon="file-image-plus" iconColor="#fff" size={30} />;
       case 2:
-        return <IconButton
-        icon="file-document-edit-outline"
-        iconColor="#fff"
-        size={30}
-        
-      />;
+        return (
+          <IconButton
+            icon="file-document-edit-outline"
+            iconColor="#fff"
+            size={30}
+          />
+        );
       default:
         return null;
     }
@@ -152,12 +143,12 @@ export const PosterSubMenu = props => {
 
   return (
     <ImageBackground
-    source={require('./Images/bg3.jpg')}
-    style={styles.backgroundImage}>
-     {/* <LinearGradient colors={['#9cbddd', '#b4b2db']} style={styles.container}> */}
+      source={require('./Images/bg3.jpg')}
+      style={styles.backgroundImage}>
+      {/* <LinearGradient colors={['#9cbddd', '#b4b2db']} style={styles.container}> */}
       <StatusBar backgroundColor="#000953" />
       <View>{getContentBasedOnCategory()}</View>
-     {/* </LinearGradient> */}
+      {/* </LinearGradient> */}
     </ImageBackground>
   );
 };
