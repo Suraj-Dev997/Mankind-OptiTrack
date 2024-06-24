@@ -147,7 +147,6 @@ const PosterDownload = () => {
     try {
       const payload = {
         docId: doctorId,
-        pType: id,
         lang: language,
         subCatId: id,
       };
@@ -188,7 +187,6 @@ const PosterDownload = () => {
 
     const payload = {
       docId: doctorId,
-      posterType: id,
       lang: language,
       subCatId: id,
     };
@@ -770,7 +768,11 @@ const PosterDownload = () => {
                 options={{format: 'jpg', quality: 0.9}}
                 style={styles.viewsstyle}>
                 <Image
-                  source={{uri: `${BASE_URL}/${poster.poster_name}`}}
+                  source={{
+                    uri: `${BASE_URL}/${
+                      poster.poster_name
+                    }?random=${new Date().getTime()}`,
+                  }}
                   style={{width: 250, height: 390}}
                 />
               </ViewShot>

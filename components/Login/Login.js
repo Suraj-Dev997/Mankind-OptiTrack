@@ -36,8 +36,9 @@ export const Login = ({navigation}) => {
     });
     console.log(EmpCode);
     console.log(Password);
-    const responseData = await response.json();
 
+    const responseData = await response.json();
+    console.log(responseData);
     if (response.ok) {
       // await AsyncStorage.setItem('user', "Suraj");
       const jsonData = JSON.stringify(responseData);
@@ -58,14 +59,14 @@ export const Login = ({navigation}) => {
       if (responseData.status == 'SUCCESS') {
         navigation.navigate('Home');
       } else {
-        Alert.alert('Error', 'Invalid EmployeeCode or Password');
+        Alert.alert('Error', 'Invalid Employee Code or Password');
         console.log(responseData.errorDetail);
       }
 
       console.log(responseData.errorCode);
     } else {
       // errorMessage(responseData.error);
-      Alert.alert('Error', 'Error while Login');
+      Alert.alert('Error', 'Invalid Employee Code or Password');
       console.log('F');
     }
     setIsLoading(false);

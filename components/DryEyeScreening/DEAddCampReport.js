@@ -402,7 +402,7 @@ const DEAddCampReport = () => {
             centerType: selectedCampId,
             campCenter: centername,
             mrcode: selectedRepId,
-            state: selectedStateId,
+            state: !selectedStateId ? 1 : selectedStateId,
             city: selectedCityId,
             zone: selectedZoneId,
             doc1: doctor1,

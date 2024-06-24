@@ -410,7 +410,7 @@ const GAddCampReport = () => {
             doc3: doctor3,
             doc4: doctor4,
             address: address,
-            state: selectedStateId,
+            state: !selectedStateId ? 1 : selectedStateId,
             city: selectedCityId,
             zone: selectedZoneId,
           };
