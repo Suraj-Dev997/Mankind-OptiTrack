@@ -382,7 +382,11 @@ const GAddCampReport = () => {
     }
   };
   const submitData = () => {
-    if (Object.keys(selectedAnswers).length === 0 || !address) {
+    if (
+      Object.keys(selectedAnswers).length !== questions.length ||
+      Object.values(selectedAnswers).some(answer => answer.trim() === '') ||
+      !address
+    ) {
       // Display an alert message if any required fields are empty
       alert('Please fill in all required fields');
       return;

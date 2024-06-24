@@ -375,7 +375,8 @@ const DEAddCampReport = () => {
     console.log('address:', address);
     console.log('centername:', centername);
     if (
-      Object.keys(selectedAnswers).length === 0 ||
+      Object.keys(selectedAnswers).length !== questions.length ||
+      Object.values(selectedAnswers).some(answer => answer.trim() === '') ||
       !address ||
       !centername ||
       !campname

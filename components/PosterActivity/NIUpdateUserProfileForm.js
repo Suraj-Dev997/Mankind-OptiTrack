@@ -326,7 +326,7 @@ const NIUpdateUserProfileForm = () => {
   return (
     <LinearGradient colors={['#9cbddd', '#9cbddd']} style={styles.container}>
       <View style={styles.container}>
-        <TouchableOpacity onPress={chooseImage}>
+        {/* <TouchableOpacity onPress={chooseImage}>
           <View style={styles.avatarContainer}>
             {avatarUri ? (
               <Avatar.Image
@@ -343,7 +343,7 @@ const NIUpdateUserProfileForm = () => {
             )}
           </View>
           <Text style={styles.changeAvatarText}>Update Profile Image</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
         <View style={styles.form}>
           <Text style={styles.datePickerLabel}>Name of Doctor</Text>
@@ -353,7 +353,7 @@ const NIUpdateUserProfileForm = () => {
               underlineColor="#fff"
               style={styles.inputField}
               outlineColor="#000953"
-              placeholder='Type here'
+              placeholder="Type here"
               theme={{
                 ...DefaultTheme,
                 colors: {
@@ -390,7 +390,7 @@ const NIUpdateUserProfileForm = () => {
             style={styles.input}
             outlineColor="#000953"
             activeOutlineColor="#08a5d8"
-            placeholder='Type here'
+            placeholder="Type here"
           />
 
           <View style={styles.datePickerContainer}>
