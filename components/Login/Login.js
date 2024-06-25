@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   TextInput,
@@ -14,12 +14,25 @@ import {BASE_URL} from '../Configuration/Config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {axios} from 'axios';
 import LinearGradient from 'react-native-linear-gradient';
+import useNetworkStatus from '../useNetworkStatus';
 
 export const Login = ({navigation}) => {
   const [EmpCode, setEmpCode] = useState('');
   const [Password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
+  const isConnected = useNetworkStatus();
+
+  useEffect(() => {
+    if (!isConnected) {
+      Alert.alert(
+        'No Internet Connection',
+        'Please check your internet connection.',
+        [{text: 'OK', onPress: () => console.log('OK Pressed')}],
+      );
+    }
+  }, [isConnected]);
 
   const handleLogin = async () => {
     setIsLoading(true);
