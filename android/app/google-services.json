@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "150284888082",
+    "project_id": "opti-track-cc37d",
+    "storage_bucket": "opti-track-cc37d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:150284888082:android:a0ed23eb531aca73c910cb",
+        "android_client_info": {
+          "package_name": "com.medicalcamp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC90aV4D-LREEDBOGxR3xyN7UZH3KKsTwU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
