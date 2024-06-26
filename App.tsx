@@ -59,10 +59,47 @@ import PosterSubMenu from './components/PosterActivity/PosterSubMenu';
 import NIPosterList from './components/PosterActivity/NIPosterList';
 import NIUserProfileForm from './components/PosterActivity/NIUserProfileForm';
 import NIUpdateUserProfileForm from './components/PosterActivity/NIUpdateUserProfileForm';
+import messaging from '@react-native-firebase/messaging';
+import {useEffect} from 'react';
+import {Platform} from 'react-native';
 
 
 const Stack = createNativeStackNavigator();
+
+async function requestUserPermission() {
+  try {
+    const authStatus = await messaging().requestPermission();
+    const enabled =
+      authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+      authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+    if (enabled) {
+      console.log('Authorization status:', authStatus);
+    }
+  } catch (error) {
+    console.log('Error requesting user permission:', error);
+  }
+}
+
+const getToken = async () => {
+  try {
+    const token = await messaging().getToken();
+    console.log("Token =", token);
+  } catch (error) {
+    console.log('Error getting FCM token:', error);
+  }
+}
+
 function App(): JSX.Element {
+  useEffect(() => {
+    requestUserPermission();
+    getToken();
+    // const unsubscribe = messaging().onMessage(async remoteMessage => {
+    //   console.log('A new FCM message arrived!', JSON.stringify(remoteMessage));
+    // });
+
+    // return unsubscribe;
+  }, []);
   return (
     <NavigationContainer>
       <Stack.Navigator
