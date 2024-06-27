@@ -15,7 +15,7 @@
 // import CampInfo from './components/CampReport/CampInfo';
 
 import React from 'react';
-import {StyleSheet, View, Text} from 'react-native';
+import {StyleSheet, View, Text,Alert} from 'react-native';
 
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
@@ -94,11 +94,13 @@ function App(): JSX.Element {
   useEffect(() => {
     requestUserPermission();
     getToken();
-    // const unsubscribe = messaging().onMessage(async remoteMessage => {
-    //   console.log('A new FCM message arrived!', JSON.stringify(remoteMessage));
-    // });
+   
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
+      console.log('A new FCM message arrived!', JSON.stringify(remoteMessage));
+      Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
+    });
 
-    // return unsubscribe;
+    return unsubscribe;
   }, []);
   return (
     <NavigationContainer>
