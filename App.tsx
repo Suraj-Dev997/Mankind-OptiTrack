@@ -62,9 +62,24 @@ import NIUpdateUserProfileForm from './components/PosterActivity/NIUpdateUserPro
 import messaging from '@react-native-firebase/messaging';
 import {useEffect} from 'react';
 import {Platform} from 'react-native';
+import PushNotification from 'react-native-push-notification';
 
+
+
+
+interface Notification {
+  foreground: boolean;
+  userInteraction: boolean;
+  message: string;
+  data: {
+    [key: string]: any;
+  };
+  // Include any other properties your notification might have
+}
 
 const Stack = createNativeStackNavigator();
+
+
 
 async function requestUserPermission() {
   try {
@@ -73,9 +88,11 @@ async function requestUserPermission() {
       authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
       authStatus === messaging.AuthorizationStatus.PROVISIONAL;
 
-    if (enabled) {
-      console.log('Authorization status:', authStatus);
-    }
+      if (enabled) {
+        console.log('Authorization status:', authStatus);
+      } else {
+        console.log('Permission not granted:', authStatus);
+      }
   } catch (error) {
     console.log('Error requesting user permission:', error);
   }
@@ -90,17 +107,58 @@ const getToken = async () => {
   }
 }
 
+
+
 function App(): JSX.Element {
   useEffect(() => {
     requestUserPermission();
     getToken();
-   
-    const unsubscribe = messaging().onMessage(async remoteMessage => {
-      console.log('A new FCM message arrived!', JSON.stringify(remoteMessage));
-      Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
-    });
 
-    return unsubscribe;
+ // Create a notification channel
+ PushNotification.createChannel(
+  {
+    channelId: "default-channel-id", // (required)
+    channelName: "Default Channel", // (required)
+    channelDescription: "A default channel", // (optional) default: undefined.
+    soundName: "default", // (optional) See `soundName` parameter of `localNotification` function
+    importance: 4, // (optional) default: 4. Int value of the Android notification importance
+    vibrate: true, // (optional) default: true. Creates the default vibration pattern if true.
+  },
+  (created: boolean) => console.log(`createChannel returned '${created}'`) // (optional) callback returns whether the channel was created, false means it already existed.
+);
+
+// Configure local notifications
+PushNotification.configure({
+  onNotification: function (notification: Notification) {
+    console.log("LOCAL NOTIFICATION ==>", notification);
+    Alert.alert('Notification', notification.message);
+  },
+  popInitialNotification: true,
+  requestPermissions: Platform.OS === 'ios',
+});
+
+// Foreground state messages
+const unsubscribe = messaging().onMessage(async remoteMessage => {
+  console.log('A new FCM message arrived!', JSON.stringify(remoteMessage));
+  Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
+  PushNotification.localNotification({
+    channelId: "default-channel-id", // Use the same channel ID
+    title: remoteMessage.notification?.title || 'No Title',
+    message: remoteMessage.notification?.body || 'No Message',
+  });
+});
+
+// Background and quit state messages
+messaging().setBackgroundMessageHandler(async remoteMessage => {
+  console.log('Message handled in the background!', remoteMessage);
+  PushNotification.localNotification({
+    channelId: "default-channel-id", // Use the same channel ID
+    title: remoteMessage.notification?.title || 'No Title',
+    message: remoteMessage.notification?.body || 'No Message',
+  });
+});
+
+return unsubscribe;
   }, []);
   return (
     <NavigationContainer>
