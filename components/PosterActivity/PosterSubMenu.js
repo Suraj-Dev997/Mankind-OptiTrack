@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Dimensions,
   ImageBackground,
+  Alert,
 } from 'react-native';
 import {useRoute} from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
@@ -16,6 +17,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useNavigation} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {IconButton} from 'react-native-paper';
+import useNetworkStatus from '../useNetworkStatus';
 
 export const PosterSubMenu = props => {
   const route = useRoute();
@@ -24,6 +26,18 @@ export const PosterSubMenu = props => {
   const [totalCamps, setTotalCamps] = useState(0);
   const [totalDoctors, setTotalDoctors] = useState(0);
   const navigation = useNavigation();
+
+  const isConnected = useNetworkStatus();
+
+  useEffect(() => {
+    if (!isConnected) {
+      Alert.alert(
+        'No Internet Connection',
+        'Please check your internet connection.',
+        [{text: 'OK', onPress: () => console.log('OK Pressed')}],
+      );
+    }
+  }, [isConnected]);
 
   useEffect(() => {
     // Fetch subcategories from the API
